@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/raffleprogram.iml" filepath="$PROJECT_DIR$/raffleprogram.iml" />
+      <module fileurl="file://$PROJECT_DIR$/src/raffleprogram1.iml" filepath="$PROJECT_DIR$/src/raffleprogram1.iml" />
     </modules>
   </component>
 </project>
