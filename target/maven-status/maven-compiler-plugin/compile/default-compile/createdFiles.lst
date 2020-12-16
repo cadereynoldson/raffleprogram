@@ -1,0 +1,10 @@
+main_structure\Column.class
+gui\MainFrame.class
+main_structure\SpreadSheet.class
+main\GMailGateway.class
+main_structure\Particle.class
+entries\RaffleStructure.class
+main_structure\Row.class
+gui\RafflePanel.class
+main\Driver.class
+gui\MainFrame$1.class
