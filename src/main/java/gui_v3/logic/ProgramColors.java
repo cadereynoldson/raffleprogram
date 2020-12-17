@@ -1,0 +1,12 @@
+package gui_v3.logic;
+
+import java.awt.*;
+
+public class ProgramColors {
+    public static final Color BACKGROUND_COLOR = new Color(89, 89, 89);
+    public static final Color FOREGROUND_COLOR = new Color(208, 206, 206);
+    public static final Color FOCUS_COLOR = new Color(0, 176, 80);
+    public static final Color TEXT_ON_BG_COLOR = new Color(255, 255, 255);
+    public static final Color TAB_COLOR = new Color(59, 56, 56);
+    public static final Color TEXT_ON_FG_COLOR = new Color(0);
+}

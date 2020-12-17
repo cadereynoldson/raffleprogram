@@ -35,8 +35,7 @@ public class RafflePanel_V2 extends JPanel implements PropertyChangeListener {
     private JPanel[] panels;
     
     private JPanel centerPanel;
-    
-    
+
     private JPanel currentPanel;
     
     private RaffleControlPanel controlPanel;

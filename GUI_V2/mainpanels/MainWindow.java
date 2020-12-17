@@ -72,22 +72,25 @@ public class MainWindow extends javax.swing.JFrame implements PropertyChangeList
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+//                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+//                    UIManager.put("nimbusBase", ProgramPresets.COLOR_TEXT);
+//                    UIManager.put("nimbusFocus", ProgramPresets.COLOR_FOCUS);
+//                    UIManager.put("ToolTip[Enabled].backgroundPainter", ProgramPresets.TOOL_TIP_PAINTER);
                     break;
                 }
             }
-            UIManager.put("nimbusBase", ProgramPresets.COLOR_TEXT);
-            UIManager.put("nimbusFocus", ProgramPresets.COLOR_FOCUS);
-            UIManager.put("ToolTip[Enabled].backgroundPainter", ProgramPresets.TOOL_TIP_PAINTER);
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(MainWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(MainWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(MainWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(MainWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (Exception e) {
+
         }
+//        } catch (ClassNotFoundException ex) {
+//            java.util.logging.Logger.getLogger(MainWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//        } catch (InstantiationException ex) {
+//            java.util.logging.Logger.getLogger(MainWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//        } catch (IllegalAccessException ex) {
+//            java.util.logging.Logger.getLogger(MainWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+//            java.util.logging.Logger.getLogger(MainWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//        }
     }
     
     @Override
