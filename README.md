@@ -5,4 +5,4 @@ Otherwise, use the current GUI (GUI V1) to load in your data.
 See the application instructions here: https://docs.google.com/document/d/198a5-hnS8HMOw5veUp64-v-1c8tMRJDCqJXl4N8v0bg/edit?usp=sharing
 - GUI V1 allows users to raffle off various items, such as shoes, shirts, and everything in between. 
 - GUI V2 (SCRAPPED)
-- GUI V3 (IN DEVELOPMENT) 
+- GUI V3 (IN DEVELOPMENT ~10% DONE) 
