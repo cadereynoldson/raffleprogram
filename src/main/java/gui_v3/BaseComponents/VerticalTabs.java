@@ -9,30 +9,39 @@ import java.awt.event.MouseListener;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 
-public class VerticalTabsAndProgressCircle extends JPanel implements MouseListener {
+/**
+ * The main form of navigation in the program.
+ */
+public class VerticalTabs extends JPanel implements MouseListener {
 
+    /** Tab item for the home tab. */
     private TabItem homeTab;
 
+    /** Tab item for the load entries tab. */
     private TabItem loadEntries;
 
+    /** Tab item for the load items tab. */
     private TabItem loadItems;
 
+    /** Tab item for removing duplicates. */
     private TabItem removeDuplicates;
 
+    /** Tab item for the raffle winners. */
     private TabItem raffleWinners;
 
+    /** A reference to the selected tab. */
     private TabItem selectedTab;
 
     private PropertyChangeSupport listener;
 
-    public VerticalTabsAndProgressCircle(PropertyChangeListener listener) {
+    public VerticalTabs(PropertyChangeListener listener) {
         super();
         this.listener = new PropertyChangeSupport(this);
         this.listener.addPropertyChangeListener(listener);
         setBackground(ProgramColors.TEXT_ON_FG_COLOR);
         homeTab = new TabItem(ProgramStrings.TAB_HOME, NavigationLocations.HOME, this);
         loadEntries = new TabItem(ProgramStrings.TAB_LOAD_ENTRIES, NavigationLocations.ENTRIES, this);
-        loadItems = new TabItem(ProgramStrings.TAB_LOAD_ITEMS, NavigationLocations.ITEMS, this);
+        loadItems = new TabItem(ProgramStrings.TAB_LOAD_ITEMS, NavigationLocations.ITEMS_AUTO_DETECT_PT1, this);
         removeDuplicates = new TabItem(ProgramStrings.TAB_REMOVE_DUPLICATES, NavigationLocations.FILTER, this);
         raffleWinners = new TabItem(ProgramStrings.TAB_RAFFLE_WINNERS, NavigationLocations.WINNERS, this);
         selectedTab = homeTab;
@@ -132,12 +141,16 @@ public class VerticalTabsAndProgressCircle extends JPanel implements MouseListen
                     title.setFont(ProgramFonts.DEFAULT_FONT_ITALICS);
                 } else {
                     setBackground(ProgramColors.TAB_COLOR);
-                    title.setFont(ProgramFonts.DEFAULT_FONT);
+                    title.setFont(ProgramFonts.DEFAULT_FONT_SMALL);
                 }
             }
             repaint();
         }
 
+        /**
+         * Paints the component. Paints a border around a non selected item. Otherwise only paints the bottom border of the item.
+         * @param g the graphics to use to paint the component.
+         */
         @Override
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
