@@ -231,7 +231,6 @@ public class ProgramDefaults {
     private static void colorDialog(Container c) {
         Component[] m = c.getComponents();
         for (int i = 0; i < m.length; i++) {
-            String className = m[i].getClass().getName();
             if (m[i] instanceof JPanel)
                 m[i].setBackground(ProgramColors.BACKGROUND_COLOR);
             else if (m[i] instanceof JLabel) {
