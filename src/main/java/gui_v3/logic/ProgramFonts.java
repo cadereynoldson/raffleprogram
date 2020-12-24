@@ -15,4 +15,5 @@ public class ProgramFonts {
 
     public static final Font DEFAULT_FONT_SMALL = new java.awt.Font("Century Gothic", 0, 14);
 
+    public static final Font DEFAULT_FONT_LARGE_ITALICS = new java.awt.Font("Century Gothic", 2, 18);
 }

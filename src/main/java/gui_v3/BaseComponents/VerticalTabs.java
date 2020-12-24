@@ -41,7 +41,7 @@ public class VerticalTabs extends JPanel implements MouseListener {
         setBackground(ProgramColors.TEXT_ON_FG_COLOR);
         homeTab = new TabItem(ProgramStrings.TAB_HOME, NavigationLocations.HOME, this);
         loadEntries = new TabItem(ProgramStrings.TAB_LOAD_ENTRIES, NavigationLocations.ENTRIES, this);
-        loadItems = new TabItem(ProgramStrings.TAB_LOAD_ITEMS, NavigationLocations.ITEMS_AUTO_DETECT_PT1, this);
+        loadItems = new TabItem(ProgramStrings.TAB_LOAD_ITEMS, NavigationLocations.ITEMS, this);
         removeDuplicates = new TabItem(ProgramStrings.TAB_REMOVE_DUPLICATES, NavigationLocations.FILTER, this);
         raffleWinners = new TabItem(ProgramStrings.TAB_RAFFLE_WINNERS, NavigationLocations.WINNERS, this);
         selectedTab = homeTab;

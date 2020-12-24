@@ -124,7 +124,7 @@ public class RaffleLogic {
     /**
      * Automatically detects items that are capable of being raffled by checking for a 
      * limited amount of unique entries in each column of the original entries sheet. 
-     * @param maxUniqueValue the maximum number of unique values for each column. 
+     * @param maxUniqueValues the maximum number of unique values for each column.
      * @return An array list of column names detected which contained less than the maximum unique values. Default = 20.
      */
     public ArrayList<String> autoDetect(int maxUniqueValues) {
@@ -189,7 +189,8 @@ public class RaffleLogic {
     public boolean autoDetectEnabled() {
         return autoDetect;
     }
-    
+
+
     public SpreadSheet getOriginalSheet() {
         return originalSheet;
     }

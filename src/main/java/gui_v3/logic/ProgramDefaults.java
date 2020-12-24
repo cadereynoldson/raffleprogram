@@ -4,9 +4,11 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.regex.Pattern;
 
 public class ProgramDefaults {
 
@@ -60,6 +62,14 @@ public class ProgramDefaults {
         return getForegroundLabel(text, SwingConstants.CENTER, SwingConstants.CENTER, ProgramFonts.DEFAULT_FONT_LARGE);
     }
 
+    public static JLabel getRightAlignedInteractionLabel(String text) {
+        return getForegroundLabel(text, SwingConstants.TRAILING, SwingConstants.CENTER, ProgramFonts.DEFAULT_FONT_LARGE);
+    }
+
+    public static JLabel getFileDisplayLabel(String text) {
+        return getForegroundLabel(ProgramStrings.strToHTML("<u>" + text + "</u>"), SwingConstants.LEADING, SwingConstants.CENTER, ProgramFonts.DEFAULT_FONT_LARGE_ITALICS);
+    }
+
     /**
      * Creates a label to be displayed on the tab list.
      * @param title the title of the tab.
@@ -78,7 +88,9 @@ public class ProgramDefaults {
      * @return a label to be used in the description panel.
      */
     public static JLabel getDescriptionLabel(String text) {
-        return getForegroundLabel(text, SwingConstants.CENTER, SwingConstants.CENTER, ProgramFonts.DEFAULT_FONT_SMALL);
+        JLabel l = getForegroundLabel(text, SwingConstants.CENTER, SwingConstants.CENTER, ProgramFonts.DEFAULT_FONT_SMALL);
+        l.setBorder(BorderFactory.createEmptyBorder(0, 15, 0, 15));
+        return l;
     }
 
     /**
@@ -127,11 +139,22 @@ public class ProgramDefaults {
     }
 
     /**
-     * Creates a spaced panel to avoid over-sized buttons.
+     * Creates a spaced panel to avoid over-sized buttons. This will contain the default BUTTON padding of y = 20, and x = 40
      * @param button the button to contain in the panel.
-     * @return
+     * @return a spaced panel to avoid over sized buttons.
      */
     public static JPanel createSpacedPanel(JButton button) {
+        return createSpacedPanel(button, 40, 20);
+    }
+
+    /**
+     * Creates a spaced panel to avoid over-sized button.
+     * @param button the button to place at the center of the panel.
+     * @param xPadding the number of pixels to pad the text in the button on the x axis (left and right of the text of the button).
+     * @param yPadding the number of pixels to pad the text in the button on the y axis (above and below the text of the button).
+     * @return a spaced panel to avoid over sized buttons.
+     */
+    public static JPanel createSpacedPanel(JButton button, int xPadding, int yPadding) {
         JPanel p = ProgramDefaults.getBlankPanel();
         p.setLayout(new GridBagLayout());
         GridBagConstraints c = new GridBagConstraints();
@@ -140,13 +163,12 @@ public class ProgramDefaults {
         c.gridy = 1;
         c.gridheight = 1;
         c.gridwidth = 1;
-        c.ipady = 20;
-        c.ipadx = 40;
+        c.ipady = yPadding;
+        c.ipadx = xPadding;
         c.anchor = GridBagConstraints.CENTER;
         p.setAlignmentY(Component.CENTER_ALIGNMENT);
         p.add(button, c);
         return p;
-
     }
 
     public static JButton getButton(String buttonName) {
@@ -154,8 +176,16 @@ public class ProgramDefaults {
         b.setBackground(ProgramColors.FOCUS_COLOR);
         b.setForeground(ProgramColors.TEXT_ON_FG_COLOR);
         b.setFont(ProgramFonts.DEFAULT_FONT_LARGE);
-
         b.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        b.setFocusPainted(false);
+        return b;
+    }
+
+    public static JCheckBox getCheckBox(String checkBoxName) {
+        JCheckBox b = new JCheckBox(checkBoxName);
+        b.setFont(ProgramFonts.DEFAULT_FONT_LARGE);
+        b.setHorizontalAlignment(SwingConstants.CENTER);
+        b.setBackground(ProgramColors.FOREGROUND_COLOR);
         b.setFocusPainted(false);
         return b;
     }
@@ -184,15 +214,17 @@ public class ProgramDefaults {
         return new ImageIcon(ProgramDefaults.class.getResource("/RaffleTicket.jpg"));
     }
 
-    public static int displayYesCancelConfirm(String message, String title, Container displayIn) {
-        JOptionPane confirm = new JOptionPane(message, JOptionPane.INFORMATION_MESSAGE, JOptionPane.DEFAULT_OPTION, CONFIRM_ICON);
-        colorDialog(confirm);
-        confirm.setBackground(ProgramColors.BACKGROUND_COLOR);
-        confirm.setFont(ProgramFonts.DEFAULT_FONT_SMALL);
-        JDialog jd = confirm.createDialog(displayIn, title);
-        jd.setVisible(true);
-        int value = ((Integer) confirm.getValue()).intValue();
-        return value;
+    /**
+     * Converts the directory of a file to it's shortform path.
+     * @param f the file to convert.
+     * @return the converted file path to display.
+     */
+    public static String getFileName(File f) {
+        String[] list = f.toString().split(Pattern.quote("\\"));
+        if (list.length == 1)
+            return "...\\" + list[0];
+        else
+            return "...\\" + list[list.length - 2] + "\\" + list[list.length - 1];
     }
 
     public static int displayYesNoConfirm(String message, String title, Container displayIn) {
@@ -202,8 +234,12 @@ public class ProgramDefaults {
         confirm.setFont(ProgramFonts.DEFAULT_FONT_SMALL);
         JDialog jd = confirm.createDialog(displayIn, title);
         jd.setVisible(true);
-        int value = ((Integer) confirm.getValue()).intValue();
-        return value;
+        try {
+            int value = ((Integer) confirm.getValue()).intValue();
+            return value;
+        } catch (NullPointerException e) {
+            return JOptionPane.NO_OPTION;
+        }
     }
 
     public static void displayError(String message, String title, Container displayIn) {

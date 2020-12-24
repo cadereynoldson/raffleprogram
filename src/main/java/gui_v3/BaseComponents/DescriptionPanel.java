@@ -6,54 +6,35 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 
-public class DescriptionPanel extends JPanel implements GUINavigationLocations {
+public class DescriptionPanel extends DisplayPanel {
 
     private JLabel descriptionTitle;
-    private ArrayList<Component> descriptionLabels;
 
     public DescriptionPanel() {
         super();
         descriptionTitle = ProgramDefaults.getCenteredTitle(ProgramStrings.INTERACTION_HOME_TITLE);
-        descriptionLabels = new ArrayList<>();
         initComponents();
         setHome();
+        setPreferredSize(new Dimension(400, 0));
     }
 
-    public void changeDescription(NavigationLocations navLoc) {
-        if (navLoc == NavigationLocations.HOME) {
-            setHome();
-        } else if (navLoc == NavigationLocations.ENTRIES) {
-            setLoadEntries();
-        } else if (navLoc == NavigationLocations.ITEMS_AUTO_DETECT_PT1) {
-            setLoadItems_autoDetect_pt1();
-        } else if (navLoc == NavigationLocations.ITEMS_AUTO_DETECT_PT2) {
-            setLoadItems_autoDetect_pt2();
-        } else if (navLoc == NavigationLocations.ITEMS_MANUAL_PT1) {
-            setLoadItems_manual_pt1();
-        } else if (navLoc == NavigationLocations.ITEMS_MANUAL_PT2) {
-            setLoadItems_manual_pt2();
-        } else if (navLoc == NavigationLocations.ITEMS_MANUAL_PT3) {
-            setLoadItems_manual_pt3();
-        } else if (navLoc == NavigationLocations.FILTER) {
-            setRemoveDuplicates();
-        } else if (navLoc == NavigationLocations.WINNERS) {
-            setRaffleWinners();
-        }
-    }
-
-    private void refreshDisplay() {
+    /**
+     * Refreshes the display based on the new title, and a list of components to set in the center.
+     * @param title
+     * @param components
+     */
+    private void refreshDisplay(String title, Component ... components) {
         removeAll();
         setLayout(new BorderLayout());
+        descriptionTitle.setText(title);
         add(descriptionTitle, BorderLayout.NORTH);
         JPanel holder = ProgramDefaults.getBlankPanel();
         holder.setLayout(new GridLayout(0, 1));
-        for (Component c : descriptionLabels)
+        for (Component c : components)
             holder.add(c);
         add(holder, BorderLayout.CENTER);
         repaint();
     }
-
-
 
     /**
      * Initializes the components of the panel.
@@ -66,28 +47,38 @@ public class DescriptionPanel extends JPanel implements GUINavigationLocations {
 
     @Override
     public void setHome() {
-        descriptionLabels.clear();
-        descriptionTitle.setText(ProgramStrings.HOME_DESCRIPTION_TITLE);
-        descriptionLabels.add(ProgramDefaults.getDescriptionLabel(ProgramStrings.HOME_DESCRIPTION_L1));
-        descriptionLabels.add(ProgramDefaults.getDescriptionLabel(ProgramStrings.HOME_DESCRIPTION_L2));
-        descriptionLabels.add(ProgramDefaults.getDescriptionLabel(ProgramStrings.HOME_DESCRIPTION_L3));
         JPanel holder = ProgramDefaults.getBlankPanel();
         holder.setLayout(new GridLayout(0, 1));
         holder.add(ProgramDefaults.getDescriptionLabel(ProgramStrings.HOME_DESCRIPTION_LINK_HEADER));
         holder.add(ProgramDefaults.convertToLink(ProgramStrings.HOME_DESCRIPTION_ABOUT_TEXT, ProgramStrings.HOME_DESCRIPTION_ABOUT_LINK));
         holder.add(ProgramDefaults.convertToLink(ProgramStrings.HOME_DESCRIPTION_GITHUB_TEXT, ProgramStrings.HOME_DESCRIPTION_GITHUB_LINK));
-        descriptionLabels.add(holder);
-        refreshDisplay();
+        refreshDisplay(
+                ProgramStrings.HOME_DESCRIPTION_TITLE,
+                ProgramDefaults.getDescriptionLabel(ProgramStrings.HOME_DESCRIPTION_L1),
+                ProgramDefaults.getDescriptionLabel(ProgramStrings.HOME_DESCRIPTION_L2),
+                ProgramDefaults.getDescriptionLabel(ProgramStrings.HOME_DESCRIPTION_L3),
+                holder
+        );
     }
 
     @Override
     public void setLoadEntries() {
-
+        refreshDisplay(
+                ProgramStrings.ENTRIES_DESCRIPTION_TITLE,
+                ProgramDefaults.getDescriptionLabel(ProgramStrings.ENTRIES_DESCRIPTION_L1),
+                ProgramDefaults.getDescriptionLabel(ProgramStrings.ENTRIES_DESCRIPTION_L2),
+                ProgramDefaults.getDescriptionLabel(ProgramStrings.ENTRIES_DESCRIPTION_L3)
+        );
     }
 
     @Override
     public void setLoadItems_autoDetect_pt1() {
-
+        refreshDisplay(
+                ProgramStrings.ITEMS_AD_DESCRIPTION_P1_TITLE,
+                ProgramDefaults.getDescriptionLabel(ProgramStrings.ITEMS_AD_DESCRIPTION_P1_L1),
+                ProgramDefaults.getDescriptionLabel(ProgramStrings.ITEMS_AD_DESCRIPTION_P1_L2),
+                ProgramDefaults.getDescriptionLabel(ProgramStrings.ITEMS_AD_DESCRIPTION_P1_L3)
+        );
     }
 
     @Override
