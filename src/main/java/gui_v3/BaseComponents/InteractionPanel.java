@@ -44,6 +44,8 @@ public class InteractionPanel extends DisplayPanel {
         this.centerPanel = centerPanel;
         add(title, BorderLayout.NORTH);
         add(this.centerPanel, BorderLayout.CENTER);
+        revalidate();
+        repaint();
     }
 
     @Override
@@ -63,9 +65,12 @@ public class InteractionPanel extends DisplayPanel {
 
     @Override
     public void setLoadItems_autoDetect_pt2() {
-        if (centerPanel instanceof InteractionItemsCenter) { //If the items panel is being displayed, notify the displayed center panel to update to a new display instance.
-
-        }
+        if (centerPanel instanceof InteractionItemsCenter) {//If the items panel is being displayed, notify the displayed center panel to update to a new display instance.
+            ((InteractionItemsCenter) centerPanel).setLocationDisplayed(NavigationLocations.ITEMS_AUTO_DETECT_PT2);
+            title.setText(ProgramStrings.ITEMS_AD_TITLE_P2);
+            repaint();
+        } else
+            resetComponents(ProgramStrings.ITEMS_AD_TITLE_P2, new InteractionItemsCenter(pcs, NavigationLocations.ITEMS_AUTO_DETECT_PT2));
     }
 
     @Override

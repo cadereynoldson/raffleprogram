@@ -68,7 +68,31 @@ public class DisplayFrame extends JFrame {
         } else if (propertyChangeEvent.getPropertyName().equals(PropertyChangeKeys.RESET_ENTRIES)) {
             resetEntries();
         } else if (propertyChangeEvent.getPropertyName().equals(PropertyChangeKeys.ITEMS_NAV_CHANGE)) {
-            lastItemLocation = (NavigationLocations) propertyChangeEvent.getNewValue();
+            NavigationLocations placeholder = (NavigationLocations) propertyChangeEvent.getNewValue();
+            if (placeholder == NavigationLocations.ITEMS_AUTO_DETECT_PT2 || placeholder == NavigationLocations.ITEMS_AUTO_DETECT_PT1) { //Check for auto detect nav.
+                handleAutoDetectNavigation(placeholder);
+            } else { //Handle manual navigation.
+
+            }
+        }
+        revalidate();
+        repaint();
+    }
+
+    private void handleAutoDetectNavigation(NavigationLocations navLoc) {
+        if (navLoc == NavigationLocations.ITEMS_AUTO_DETECT_PT2
+                && RaffleDataStorage.getSelectedAutoDetectValues().isEmpty()) { //Display error that you cannot continue without checking a box.
+            ProgramDefaults.displayError(ProgramStrings.DIALOGUE_ITEMS_AD_CONTINUE_ERROR, ProgramStrings.DIALOGUE_LOAD_ERROR_TITLE, this);
+        } else if (navLoc == NavigationLocations.ITEMS_AUTO_DETECT_PT2){
+            lastItemLocation = navLoc;
+            interactionPanel.setContents(lastItemLocation);
+            informationPanel.setContents(lastItemLocation);
+            descriptionPanel.setContents(lastItemLocation);
+        } else if (navLoc == NavigationLocations.ITEMS_AUTO_DETECT_PT1) {
+            lastItemLocation = navLoc;
+            interactionPanel.setContents(lastItemLocation);
+            informationPanel.setContents(lastItemLocation);
+            descriptionPanel.setContents(lastItemLocation);
         }
     }
 
@@ -85,6 +109,7 @@ public class DisplayFrame extends JFrame {
             informationPanel.setContents(currentLocation);
             interactionPanel.setContents(currentLocation);
             descriptionPanel.setContents(currentLocation);
+            revalidate();
             repaint();
         }
     }
@@ -137,6 +162,7 @@ public class DisplayFrame extends JFrame {
                 if (interactionPanel.getCenterPanel() instanceof InteractionEntriesCenter) { //Just double check the entries panel is still selected.
                     ((InteractionEntriesCenter) interactionPanel.getCenterPanel()).setLoadedFileText(ProgramStrings.ENTRIES_INFORMATION_FILE_STATUS_NO_FILE_LOADED);
                     informationPanel.setLoadEntries();
+                    //TODO: Handle other location manipulation. (maybe??)
                 }
             }
         } else { //MAKE BEEP NOISE!

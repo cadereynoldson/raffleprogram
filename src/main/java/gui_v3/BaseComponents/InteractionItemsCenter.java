@@ -1,6 +1,7 @@
 package gui_v3.BaseComponents;
 
 import gui_v3.logic.*;
+import main_structure.SpreadSheet;
 
 import javax.swing.*;
 import java.awt.*;
@@ -20,6 +21,10 @@ public class InteractionItemsCenter extends JPanel {
     private NavigationLocations locationDisplayed;
 
     private JCheckBox autoDetectToggle;
+
+    private JTable autoDetectTable;
+
+    private SpreadSheet autoDetectSpreadSheet;
 
     public InteractionItemsCenter(PropertyChangeSupport pcs, NavigationLocations location) {
         super();
@@ -85,10 +90,11 @@ public class InteractionItemsCenter extends JPanel {
         removeAll();
         setLayout(new GridLayout(0, 1));
         add(ProgramDefaults.getCenterAlignedInteractionLabel(ProgramStrings.ITEMS_AD_BRIEF_DESCRIPTION_P1));
-        add(autoDetectToggle);
         if (!RaffleDataStorage.hasEntriesFile()) {
-            //TODO: No entries file, blah blah blah
+            add(ProgramDefaults.getCenterAlignedInteractionLabel(ProgramStrings.ITEMS_AD_NO_ENTRIES_FILE));
+            add(autoDetectToggle);
         } else {
+            add(autoDetectToggle);
             add(getAutoDetectChecklistPanel());
             JButton contButton = ProgramDefaults.getButton(ProgramStrings.ITEMS_AD_CONTINUE_BUTTON);
             contButton.addActionListener(event -> { //Fire property change to navigate to items change part 2.
@@ -145,8 +151,18 @@ public class InteractionItemsCenter extends JPanel {
     }
 
 
-    private void setAutoDetect_P2() {
-
+    public void setAutoDetect_P2() {
+        if (RaffleDataStorage.getSelectedAutoDetectValues().isEmpty()) {
+            //TODO: Do error handling for setting this page. Jeez you really fucked up if this is where you got to.
+        } else {
+            System.out.println("HELLO IM HERE IN THE CENTER");
+            removeAll();
+            setLayout(new BorderLayout());
+            add(ProgramDefaults.getCenterAlignedInteractionLabel(ProgramStrings.ITEMS_AD_BRIEF_DESCRIPTION_P2), BorderLayout.NORTH);
+            autoDetectSpreadSheet = RaffleDataStorage.createItemCountSheet();
+            autoDetectTable = ProgramDefaults.getTable(autoDetectSpreadSheet, autoDetectSpreadSheet.getNumColumns() - 1); //Create new table.
+            add(autoDetectTable, BorderLayout.CENTER);
+        }
     }
 
     private void setManual_P1() {

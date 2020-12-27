@@ -1,10 +1,14 @@
 package gui_v3.logic;
 
+import main_structure.Column;
+import main_structure.Row;
 import main_structure.SpreadSheet;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 /**
  * Stores all of the data and handles all of the logic involved with the raffle.
@@ -26,7 +30,7 @@ public class RaffleDataStorage {
     /** Selected filters for the data! */
     private static ArrayList<String> chosenFilters = new ArrayList<>();
 
-    private static HashSet<String> selectedAutoDetectValues = new HashSet<>();
+    private static ArrayList<String> selectedAutoDetectValues = new ArrayList<>();
 
     /** The most recently manipulated spreadsheet. */
     private static SpreadSheet currentEntriesSheet;
@@ -138,15 +142,73 @@ public class RaffleDataStorage {
     }
 
     public static void addAutoDetectFilter(String filter) {
-        selectedAutoDetectValues.add(filter);
+        selectedAutoDetectValues.add(filter.trim());
     }
 
     public static void removeAutoDetectFilter(String filter) {
         selectedAutoDetectValues.remove(filter);
     }
 
-    public static HashSet<String> getSelectedAutoDetectValues() {
+    public static ArrayList<String> getSelectedAutoDetectValues() {
         return selectedAutoDetectValues;
+    }
+
+    /**
+     * Creates an item count data sheet for the stored auto detect values.
+     * @return an item count sheet for the selected column.
+     */
+    public static SpreadSheet createItemCountSheet() {
+        SpreadSheet s = new SpreadSheet();
+        if (selectedAutoDetectValues.size() == 1)
+            return createItemCountSheet(selectedAutoDetectValues.get(0));
+        if (selectedAutoDetectValues.size() == 2) { //If there are only two columns to map together
+            Column c1 = originalEntriesSheet.getColumn(originalEntriesSheet.getColumnIndex(selectedAutoDetectValues.get(0)));
+            Column c2 = originalEntriesSheet.getColumn(originalEntriesSheet.getColumnIndex(selectedAutoDetectValues.get(1)));
+            TreeMap<Object, TreeSet<Object>> values = new TreeMap<Object, TreeSet<Object>>();
+            for (int i = 0; i < c1.getLength(); i++) {
+                Object v1 = c1.get(i).getValue();
+                Object v2 = c2.get(i).getValue();
+                if (values.containsKey(v1)) {
+                    values.get(v1).add(v2);
+                } else {
+                    TreeSet<Object> v1_values = new TreeSet<Object>();
+                    v1_values.add(v2);
+                    values.put(v1, v1_values);
+                }
+            }
+            String[] names = {selectedAutoDetectValues.get(0), selectedAutoDetectValues.get(1), "Quantity"};
+            s.initColumns(names);
+            for (Object rowValue : values.keySet()) {
+                for (Object subValue : values.get(rowValue)) {
+                    Row r = new Row();
+                    r.add(rowValue.toString());
+                    r.add(subValue.toString());
+                    r.add(Integer.toString(0));
+                    s.addRow(r);
+                }
+            }
+        }
+        return s;
+    }
+
+    /**
+     * Creates an item count sheet for one column which has the specified column name.
+     * @param columnName the column name to use for creating a count spreadsheet with.
+     * @return an item count sheet for one column.
+     */
+    public static SpreadSheet createItemCountSheet(String columnName) {
+        SpreadSheet s = new SpreadSheet();
+        String[] names = {columnName, "Quantity"};
+        s.initColumns(names);
+        Column c = originalEntriesSheet.getColumn(originalEntriesSheet.getColumnIndex(columnName));
+        TreeSet<Object> uniqueValues = c.getUniqueValues();
+        for (Object o : uniqueValues) {
+            Row r = new Row();
+            r.add(o.toString());
+            r.add(Integer.toString(0));
+            s.addRow(r);
+        }
+        return s;
     }
 
 }

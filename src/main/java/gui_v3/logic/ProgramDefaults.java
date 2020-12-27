@@ -1,6 +1,11 @@
 package gui_v3.logic;
 
+import main_structure.SpreadSheet;
+
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -8,6 +13,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Comparator;
 import java.util.regex.Pattern;
 
 public class ProgramDefaults {
@@ -171,6 +177,11 @@ public class ProgramDefaults {
         return p;
     }
 
+    /**
+     * Creates a button themed to this program.
+     * @param buttonName the name or text to display for this button.
+     * @return a button themed to this program.
+     */
     public static JButton getButton(String buttonName) {
         JButton b = new JButton(buttonName);
         b.setBackground(ProgramColors.FOCUS_COLOR);
@@ -181,14 +192,73 @@ public class ProgramDefaults {
         return b;
     }
 
+    /**
+     * Creates a JCheckbox themed to this program with a given name.
+     * @param checkBoxName the name or text to display with this checkbox.
+     * @return a checkbox themed to this program with a given name.
+     */
     public static JCheckBox getCheckBox(String checkBoxName) {
-        JCheckBox b = new JCheckBox(checkBoxName);
+        JCheckBox b = new JCheckBox("   " + checkBoxName);
         b.setFont(ProgramFonts.DEFAULT_FONT_LARGE);
         b.setHorizontalAlignment(SwingConstants.CENTER);
         b.setBackground(ProgramColors.FOREGROUND_COLOR);
         b.setFocusPainted(false);
         return b;
     }
+
+    /* TABLE METHODS *****************************************************/
+
+    /**
+     * Creates a table for a given spreadsheet. By default ALL of the cells in the table WILL be disabled!
+     * @param s the spreadsheet to convert to a JTable.
+     * @return a JTable consisting of the data of a spreadsheet.
+     */
+    public static JTable getTable(SpreadSheet s) {
+        return getTable(s, -1);
+    }
+
+    /**
+     * Creates a table for a given spreadsheet. Only one spreadsheet in this table will be enabled!
+     * @param s the spreadsheet to convert to a JTable.
+     * @param enabledColIndex the index of the column to enable.
+     * @return a JTable consisting of the data of a spreadsheet.
+     */
+    public static JTable getTable(SpreadSheet s, int enabledColIndex) {
+        JTable table = new JTable(new DefaultTableModel(s.getObjectRepresentation(), s.getColumnNames())) {
+            /** Only allows for the editing of the count cell. */
+            public boolean isCellEditable(int row, int column) {
+                if (column == enabledColIndex)
+                    return true;
+                return false;
+            };
+        };
+        table.setRowSorter(initTableSorter(table, s));
+        table.setFont(ProgramFonts.DEFAULT_FONT_SMALL);
+        return table;
+    }
+
+    /**
+     * Initializes the table sorter for sorting by a row.
+     */
+    private static TableRowSorter<TableModel> initTableSorter(JTable table, SpreadSheet spreadSheet) {
+        TableRowSorter<TableModel> sorter = new TableRowSorter<>(table.getModel());
+        Comparator<Integer> intCompare = Integer::compare;
+        Comparator<Float> floatCompare = Float::compare;
+        Comparator<String> stringCompare = String::compareTo;
+        for (int i = 0; i < spreadSheet.getNumColumns(); i++) { //For all of the columns, set comparator.
+            Object value = spreadSheet.getColumn(i).get(0).getValue();
+            if (value instanceof Integer)
+                sorter.setComparator(i, intCompare);
+            else if (value instanceof Float)
+                sorter.setComparator(i, floatCompare);
+            else if (value instanceof String)
+                sorter.setComparator(i, stringCompare);
+        }
+        return sorter;
+    }
+
+
+    /* IMAGE ICON METHODS *****************************************************/
 
     /**
      * Creates an returns an image icon containing the x.png image.
@@ -248,6 +318,7 @@ public class ProgramDefaults {
         error.setBackground(ProgramColors.BACKGROUND_COLOR);
         error.setFont(ProgramFonts.DEFAULT_FONT_SMALL);
         JDialog jd = error.createDialog(displayIn, title);
+        java.awt.Toolkit.getDefaultToolkit().beep();
         jd.setVisible(true);
     }
 
@@ -257,6 +328,7 @@ public class ProgramDefaults {
         info.setBackground(ProgramColors.BACKGROUND_COLOR);
         info.setFont(ProgramFonts.DEFAULT_FONT_SMALL);
         JDialog jd = info.createDialog(displayIn, title);
+        java.awt.Toolkit.getDefaultToolkit().beep();
         jd.setVisible(true);
     }
 

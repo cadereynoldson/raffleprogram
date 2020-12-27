@@ -87,7 +87,7 @@ public class ProgramStrings {
 
     /* ITEMS PAGE STRINGS ***********************************************************/
 
-    public static final String ITEMS_AUTO_DETECT_TOGGLE = "   Auto Detect";
+    public static final String ITEMS_AUTO_DETECT_TOGGLE = "Auto Detect";
 
     public static final String ITEMS_AD_TITLE_P1 = "Auto Detect Part 1";
 
@@ -97,6 +97,10 @@ public class ProgramStrings {
 
 
     public static final String ITEMS_AD_DETECTED_PROMPT = strToHTML("<center>Detected Item Identifiers:</center>");
+
+    public static final String ITEMS_AD_NO_ENTRIES_FILE = strToHTML("<center><b>There is no entries file to base auto-detection off of!</b>" +
+                    "<br/>Auto detection is least error prone way of setting your raffle items, and is highly encouraged!" +
+                    "<br/>Or you can manually input the items by un-checking the auto detect checkbox.</center>");
 
     public static final String ITEMS_AD_CONTINUE_BUTTON = "CONTINUE";
 
@@ -109,6 +113,10 @@ public class ProgramStrings {
 
     public static final String ITEMS_AD_DESCRIPTION_P1_L3 = strToHTML("Checking multiple boxes would be applicable if you're raffling multiple colorways!" +
                     " An example of this would be to check the checkbox corresponding to size and the checkbox corresponding to color.");
+
+    public static final String ITEMS_AD_TITLE_P2 = "Auto Detect Part 2";
+
+    public static final String ITEMS_AD_BRIEF_DESCRIPTION_P2 = strToHTML("<center>Fill in the following table with the number of items you have to raffle for the individual items!</center>");
 
     /* DIALOGUE STRINGS *************************************************************/
 
@@ -131,9 +139,11 @@ public class ProgramStrings {
 
     public static final String DIALOGUE_RESET_WARNING = "Resetting your entries file will reset all of your progress!\nAre you sure you want to continue?";
 
-    public static final String DIALOGUE_LOAD_ERROR_TITLE = "ERROR";
+    public static final String DIALOGUE_LOAD_ERROR_TITLE = "Error";
 
     public static final String DIALOGUE_LOAD_ERROR = "There has been an error loading your file. Double check it is a compatible file type of the program!";
+
+    public static final String DIALOGUE_ITEMS_AD_CONTINUE_ERROR = "You haven't selected any values which would identify your raffle items!";
 
     /**
      * Converts a string to HTML so lines can wrap within a JLabel.
