@@ -127,7 +127,7 @@ public class RafflePanel extends javax.swing.JPanel implements PropertyChangeLis
                 try {
                     if (o instanceof Float) {
                         SpreadSheet items = uniqueItems.get(o);
-                        int count = (int) Float.parseFloat(Float.toString(((Float) items.getPartice(0, items.getIndex(specs.getCountColumn())).getValue())));
+                        int count = (int) Float.parseFloat(Float.toString(((Float) items.getParticle(0, items.getIndex(specs.getCountColumn())).getValue())));
                         SpreadSheet winners = uniqueEntries.get(o).raffleItem(count);
                         if (!winners.writeToFile(fileInputs.getOutputFileName(), Float.toString((Float) o), outputPath.getAbsolutePath())) 
                             showError("Error writing file for " + fileInputs.getOutputFileName() + "_" + (String) o);
@@ -135,7 +135,7 @@ public class RafflePanel extends javax.swing.JPanel implements PropertyChangeLis
                             totalRaffled++;
                     } else if (o instanceof String) {
                         SpreadSheet items = uniqueItems.get(o);
-                        int count = (int) Float.parseFloat(Float.toString(((Float) items.getPartice(0, items.getIndex(specs.getCountColumn())).getValue())));
+                        int count = (int) Float.parseFloat(Float.toString(((Float) items.getParticle(0, items.getIndex(specs.getCountColumn())).getValue())));
                         SpreadSheet winners = uniqueEntries.get(o).raffleItem(count);
                         if (!winners.writeToFile(fileInputs.getOutputFileName(), (String) o, outputPath.getAbsolutePath()))
                             showError("Error writing file for " + fileInputs.getOutputFileName() + "_" + (String) o);
@@ -171,7 +171,7 @@ public class RafflePanel extends javax.swing.JPanel implements PropertyChangeLis
                 } else {
                     if (o instanceof Float) {
                         SpreadSheet items = uniqueItems.get(o);
-                        int count = (int) Float.parseFloat(Float.toString(((Float) items.getPartice(0, items.getIndex(specs.getCountColumn())).getValue())));
+                        int count = (int) Float.parseFloat(Float.toString(((Float) items.getParticle(0, items.getIndex(specs.getCountColumn())).getValue())));
                         SpreadSheet winners = uniqueEntries.get(o).raffleItem(count);
                         if (!winners.writeToFile(fileInputs.getOutputFileName() + "(" + uniqueIdentifier + ")", Float.toString((Float) o), outputPath.getAbsolutePath())) 
                             showError("Error writing file for " + fileInputs.getOutputFileName() + "_" + (String) o);
@@ -179,7 +179,7 @@ public class RafflePanel extends javax.swing.JPanel implements PropertyChangeLis
                             totalRaffled++;
                     } else if (o instanceof String) {
                         SpreadSheet items = uniqueItems.get(o);
-                        int count = (int) Float.parseFloat(Float.toString(((Float) items.getPartice(0, items.getIndex(specs.getCountColumn())).getValue())));
+                        int count = (int) Float.parseFloat(Float.toString(((Float) items.getParticle(0, items.getIndex(specs.getCountColumn())).getValue())));
                         SpreadSheet winners = uniqueEntries.get(o).raffleItem(count);
                         if (!winners.writeToFile(fileInputs.getOutputFileName(), (String) o, outputPath.getAbsolutePath()))
                             showError("Error writing file for " + fileInputs.getOutputFileName() + "_" + (String) o);

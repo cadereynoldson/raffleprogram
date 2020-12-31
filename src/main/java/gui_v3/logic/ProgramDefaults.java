@@ -1,11 +1,12 @@
 package gui_v3.logic;
 
+import main_structure.Row;
 import main_structure.SpreadSheet;
 
 import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableModel;
-import javax.swing.table.TableRowSorter;
+import javax.swing.plaf.basic.BasicScrollBarUI;
+import javax.swing.table.*;
+import javax.swing.text.JTextComponent;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -13,7 +14,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Comparator;
 import java.util.regex.Pattern;
 
 public class ProgramDefaults {
@@ -26,6 +26,9 @@ public class ProgramDefaults {
 
     /** Error icon to be displayed in a dialogue box. */
     private static final ImageIcon ERROR_ICON = new ImageIcon(ProgramDefaults.class.getResource("/ErrorIcon.png"));
+
+    /** The maximum table rows to display. */
+    private static final int MAX_DISPLAYED_TABLE_ROWS = 12;
 
     /**
      * Creates a foreground label.
@@ -206,6 +209,12 @@ public class ProgramDefaults {
         return b;
     }
 
+    public static JTextField getTextField() {
+        JTextField f = new JTextField();
+        f.setFont(ProgramFonts.DEFAULT_FONT_LARGE);
+        return f;
+    }
+
     /* TABLE METHODS *****************************************************/
 
     /**
@@ -224,39 +233,100 @@ public class ProgramDefaults {
      * @return a JTable consisting of the data of a spreadsheet.
      */
     public static JTable getTable(SpreadSheet s, int enabledColIndex) {
-        JTable table = new JTable(new DefaultTableModel(s.getObjectRepresentation(), s.getColumnNames())) {
+        Object[][] data = s.getObjectRepresentation();
+        for (int i = 0; i < data[0].length; i++) {
+            System.out.println(data[0][i].getClass().toString());
+        }
+        JTable table = new JTable(data, s.getColumnNames()) {
             /** Only allows for the editing of the count cell. */
+            @Override
             public boolean isCellEditable(int row, int column) {
                 if (column == enabledColIndex)
                     return true;
                 return false;
-            };
+            }
+
+            /** Fetches the column class. */
+            @Override
+            public Class<?> getColumnClass(int column) {
+                Class returnValue;
+                if ((column >= 0) && (column < getColumnCount()))
+                    returnValue = data[0][column].getClass();
+                else
+                    returnValue = Object.class;
+                return returnValue;
+            }
         };
-        table.setRowSorter(initTableSorter(table, s));
-        table.setFont(ProgramFonts.DEFAULT_FONT_SMALL);
+        table.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
+        //Sorter and table theme.
+        table.setRowSorter(new TableRowSorter<>(table.getModel()));
+        table.setBackground(ProgramColors.TABLE_CELL_COLOR);
+        table.setForeground(ProgramColors.TEXT_ON_FG_COLOR);
+        table.setSelectionBackground(ProgramColors.TABLE_ROW_FOCUS_COLOR);
+        table.setFont(ProgramFonts.DEFAULT_FONT_LARGE);
+        table.setGridColor(ProgramColors.TABLE_BORDER_COLOR);
+        table.getTableHeader().setReorderingAllowed(false);
+        table.getColumnModel().getColumn(enabledColIndex).setCellEditor(new TableEditor(getTextField()));
+        //Cell height and program color.
+        table.setRowHeight(24);
+        //Header theme.
+        JTableHeader tableHeader = table.getTableHeader();
+        tableHeader.setOpaque(false);
+        tableHeader.setBackground(ProgramColors.TABLE_HEADER_COLOR);
+        tableHeader.setForeground(ProgramColors.TABLE_HEADER_TEXT_COLOR);
+        tableHeader.setFont(ProgramFonts.DEFAULT_FONT_LARGE);
+        //Header border color.
+        TableCellRenderer headerRenderer = tableHeader.getDefaultRenderer();
+        tableHeader.setDefaultRenderer((table1, value, isSelected, hasFocus, row, column) -> {
+            JLabel lbl = (JLabel) headerRenderer.getTableCellRendererComponent(table1, value, isSelected, hasFocus, row, column);
+            lbl.setForeground(ProgramColors.TABLE_HEADER_TEXT_COLOR);
+            lbl.setBorder(BorderFactory.createCompoundBorder(lbl.getBorder(), BorderFactory.createLineBorder(ProgramColors.TEXT_ON_FG_COLOR)));
+            lbl.setHorizontalAlignment(SwingConstants.LEADING);
+            return lbl;
+        });
         return table;
     }
 
-    /**
-     * Initializes the table sorter for sorting by a row.
-     */
-    private static TableRowSorter<TableModel> initTableSorter(JTable table, SpreadSheet spreadSheet) {
-        TableRowSorter<TableModel> sorter = new TableRowSorter<>(table.getModel());
-        Comparator<Integer> intCompare = Integer::compare;
-        Comparator<Float> floatCompare = Float::compare;
-        Comparator<String> stringCompare = String::compareTo;
-        for (int i = 0; i < spreadSheet.getNumColumns(); i++) { //For all of the columns, set comparator.
-            Object value = spreadSheet.getColumn(i).get(0).getValue();
-            if (value instanceof Integer)
-                sorter.setComparator(i, intCompare);
-            else if (value instanceof Float)
-                sorter.setComparator(i, floatCompare);
-            else if (value instanceof String)
-                sorter.setComparator(i, stringCompare);
-        }
-        return sorter;
+    private static TableRowSorter<TableModel> initRowSorter() {
+        TableRowSorter<TableModel> s = new TableRowSorter<>();
+        return s;
     }
 
+    /**
+     * Table editor, allows for selection of all text
+     */
+    private static class TableEditor extends DefaultCellEditor {
+
+        public TableEditor(JTextField textField) {
+            super(textField);
+        }
+
+        @Override
+        public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
+            Component c = super.getTableCellEditorComponent(table, value, isSelected, row, column);
+            if (c instanceof JTextComponent) {
+                JTextComponent jtc = (JTextComponent) c;
+                jtc.requestFocus();
+                SwingUtilities.invokeLater(() -> jtc.selectAll());
+            }
+            return c;
+        }
+    }
+
+    public static JScrollPane getTableScrollPane(JTable table) {
+        JScrollPane scrollPane = new JScrollPane(table);
+        scrollPane.setBackground(ProgramColors.TABLE_CELL_COLOR);
+        scrollPane.setBorder(BorderFactory.createEmptyBorder());
+        scrollPane.setBorder(BorderFactory.createLineBorder(ProgramColors.TEXT_ON_FG_COLOR));
+        scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        int height;
+        if (table.getRowCount() > MAX_DISPLAYED_TABLE_ROWS)
+            height = MAX_DISPLAYED_TABLE_ROWS * table.getRowHeight();
+        else
+            height = table.getRowCount() * table.getRowHeight();
+        table.setPreferredScrollableViewportSize(new Dimension(table.getPreferredSize().width, height));
+        return scrollPane;
+    }
 
     /* IMAGE ICON METHODS *****************************************************/
 
@@ -303,6 +373,7 @@ public class ProgramDefaults {
         confirm.setBackground(ProgramColors.BACKGROUND_COLOR);
         confirm.setFont(ProgramFonts.DEFAULT_FONT_SMALL);
         JDialog jd = confirm.createDialog(displayIn, title);
+        java.awt.Toolkit.getDefaultToolkit().beep();
         jd.setVisible(true);
         try {
             int value = ((Integer) confirm.getValue()).intValue();
@@ -328,7 +399,6 @@ public class ProgramDefaults {
         info.setBackground(ProgramColors.BACKGROUND_COLOR);
         info.setFont(ProgramFonts.DEFAULT_FONT_SMALL);
         JDialog jd = info.createDialog(displayIn, title);
-        java.awt.Toolkit.getDefaultToolkit().beep();
         jd.setVisible(true);
     }
 

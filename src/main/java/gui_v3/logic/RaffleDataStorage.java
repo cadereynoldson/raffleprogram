@@ -5,10 +5,7 @@ import main_structure.Row;
 import main_structure.SpreadSheet;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.TreeMap;
-import java.util.TreeSet;
+import java.util.*;
 
 /**
  * Stores all of the data and handles all of the logic involved with the raffle.
@@ -19,6 +16,7 @@ public class RaffleDataStorage {
     /** The file dump the winners into. */
     private static File outputFile = new File(System.getProperty("user.dir"));
 
+    /** The display string of the entries sheet. */
     private static String entriesSheetFileDisplay;
 
     /** Indicates whether this raffle is using auto detect for selecting items. */
@@ -30,6 +28,7 @@ public class RaffleDataStorage {
     /** Selected filters for the data! */
     private static ArrayList<String> chosenFilters = new ArrayList<>();
 
+    /** Selected values used in creating an auto detect count sheet. */
     private static ArrayList<String> selectedAutoDetectValues = new ArrayList<>();
 
     /** The most recently manipulated spreadsheet. */
@@ -52,6 +51,7 @@ public class RaffleDataStorage {
         originalEntriesSheet = null;
         itemsSheet = null;
         chosenFilters.clear();
+        chosenFilters.clear();
         entriesSheetFileDisplay = null;
     }
 
@@ -61,16 +61,23 @@ public class RaffleDataStorage {
             originalEntriesSheet = null;
             currentEntriesSheet = null;
             entriesSheetFileDisplay = null;
-            chosenFilters.clear();
-            itemsSheet = null;
+            resetItemsData();
             throw new IllegalArgumentException();
         } else {
             originalEntriesSheet = s;
             currentEntriesSheet = originalEntriesSheet;
             entriesSheetFileDisplay = ProgramDefaults.getFileName(f);
-            chosenFilters.clear();
-            itemsSheet = null;
+            resetItemsData();
         }
+    }
+
+    /**
+     * Resets all entries dependent values stored in this class to their original state.
+     */
+    public static void resetItemsData() {
+        selectedAutoDetectValues.clear();
+        chosenFilters.clear();
+        itemsSheet = null;
     }
 
     public static void setItemsSheet(File f) {
@@ -81,6 +88,27 @@ public class RaffleDataStorage {
         } else {
             itemsSheet = s;
         }
+    }
+
+    /**
+     * Sets the items sheet from the data of parsed from a JTable. (Auto-Detect)
+     * @param o
+     * @param colNames
+     * @return
+     */
+    public static void setItemsSheet(Object[][] o, String[] colNames) {
+        SpreadSheet s = new SpreadSheet();
+        s.initColumns(colNames);
+        for (int i = 0; i < o.length; i++) {
+            System.out.println(Arrays.toString(o[i]));
+            s.addRow(new Row(o[i]));
+        }
+        itemsSheet = s;
+        itemsSheet.printSheet();
+    }
+
+    public static SpreadSheet getItemsSheet() {
+        return itemsSheet;
     }
 
     public static String getEntriesFileString() {
@@ -146,7 +174,7 @@ public class RaffleDataStorage {
     }
 
     public static void removeAutoDetectFilter(String filter) {
-        selectedAutoDetectValues.remove(filter);
+        selectedAutoDetectValues.remove(filter.trim());
     }
 
     public static ArrayList<String> getSelectedAutoDetectValues() {
@@ -176,7 +204,7 @@ public class RaffleDataStorage {
                     values.put(v1, v1_values);
                 }
             }
-            String[] names = {selectedAutoDetectValues.get(0), selectedAutoDetectValues.get(1), "Quantity"};
+            String[] names = {selectedAutoDetectValues.get(0), selectedAutoDetectValues.get(1), ProgramStrings.QUANTITY_COLUMN_NAME};
             s.initColumns(names);
             for (Object rowValue : values.keySet()) {
                 for (Object subValue : values.get(rowValue)) {

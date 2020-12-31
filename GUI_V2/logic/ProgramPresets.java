@@ -269,14 +269,11 @@ public class ProgramPresets {
      * @return a custom tool tip painter. 
      */
     public static Painter<JToolTip> getToolTipPainter() {
-        final Painter<JToolTip> painter = new Painter<JToolTip>() {
-            @Override
-            public void paint(Graphics2D g, JToolTip object, int width, int height) {
-                object.setBackground(COLOR_BACKGROUND);
-                object.setForeground(COLOR_TEXT);
-                object.setFont(DEFAULT_FONT);
-                object.setBorder(BorderFactory.createLineBorder(COLOR_TEXT));
-            }
+        final Painter<JToolTip> painter = (g, object, width, height) -> {
+            object.setBackground(COLOR_BACKGROUND);
+            object.setForeground(COLOR_TEXT);
+            object.setFont(DEFAULT_FONT);
+            object.setBorder(BorderFactory.createLineBorder(COLOR_TEXT));
         };
         return painter; 
     }

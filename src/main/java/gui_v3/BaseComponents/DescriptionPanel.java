@@ -83,7 +83,12 @@ public class DescriptionPanel extends DisplayPanel {
 
     @Override
     public void setLoadItems_autoDetect_pt2() {
-
+        refreshDisplay(
+                ProgramStrings.ITEMS_AD_DESCRIPTION_P2_TITLE,
+                ProgramDefaults.getDescriptionLabel(ProgramStrings.ITEMS_AD_DESCRIPTION_P2_L1),
+                ProgramDefaults.getDescriptionLabel(ProgramStrings.ITEMS_AD_DESCRIPTION_P2_L2),
+                ProgramDefaults.getDescriptionLabel(ProgramStrings.ITEMS_AD_DESCRIPTION_P2_L3)
+        );
     }
 
     @Override

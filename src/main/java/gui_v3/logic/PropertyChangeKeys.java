@@ -6,4 +6,5 @@ public class PropertyChangeKeys {
     public static final String LOAD_ENTRIES = "LOAD_ENTRIES";
     public static final String RESET_ENTRIES = "RESET_ENTRIES";
     public static final String ITEMS_NAV_CHANGE = "ITEMS_NAV_CHANGE";
+    public static final String ITEMS_AD_QUANTITIES_CONFIRMED = "ITEMS_QC";
 }

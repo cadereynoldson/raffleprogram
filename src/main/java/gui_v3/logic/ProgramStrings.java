@@ -89,7 +89,7 @@ public class ProgramStrings {
 
     public static final String ITEMS_AUTO_DETECT_TOGGLE = "Auto Detect";
 
-    public static final String ITEMS_AD_TITLE_P1 = "Auto Detect Part 1";
+    public static final String ITEMS_AD_TITLE_P1 = "Auto Detect Items Part 1";
 
     public static final String ITEMS_AD_BRIEF_DESCRIPTION_P1 = strToHTML("<center>Ease your raffle process letting an algorithm detect the items you're raffling." +
                     "<br/>Check the values which would indicate what would uniquely identify a category of raffle item." +
@@ -104,7 +104,7 @@ public class ProgramStrings {
 
     public static final String ITEMS_AD_CONTINUE_BUTTON = "CONTINUE";
 
-    public static final String ITEMS_AD_DESCRIPTION_P1_TITLE = "AD Part 1 Description";
+    public static final String ITEMS_AD_DESCRIPTION_P1_TITLE = "Items AD Part 1 Description";
 
     public static final String ITEMS_AD_DESCRIPTION_P1_L1 = strToHTML("Select the checkboxes which would determine a type of item you're raffling.");
 
@@ -114,9 +114,31 @@ public class ProgramStrings {
     public static final String ITEMS_AD_DESCRIPTION_P1_L3 = strToHTML("Checking multiple boxes would be applicable if you're raffling multiple colorways!" +
                     " An example of this would be to check the checkbox corresponding to size and the checkbox corresponding to color.");
 
-    public static final String ITEMS_AD_TITLE_P2 = "Auto Detect Part 2";
+    public static final String ITEMS_AD_TITLE_P2 = "Auto Detect Items Part 2";
 
     public static final String ITEMS_AD_BRIEF_DESCRIPTION_P2 = strToHTML("<center>Fill in the following table with the number of items you have to raffle for the individual items!</center>");
+
+    public static final String ITEMS_AD_DESCRIPTION_P2_TITLE = "Items AD Part 2 Description";
+
+    public static final String ITEMS_AD_DESCRIPTION_P2_L1 = strToHTML("Fill out the table with the quantities of items you have to raffle.");
+
+    public static final String ITEMS_AD_DESCRIPTION_P2_L2 = strToHTML("Click \"confirm quantities\" to confirm the quantities of each item you have.");
+
+    public static final String ITEMS_AD_DESCRIPTION_P2_L3 = strToHTML("Once quantities are confirmed, you have the bare minimum needed to raffle your items!");
+
+    public static final String ITEMS_AD_BACK = "BACK";
+
+    public static final String ITEMS_AD_CONFIRM_QUANTITIES = "CONFIRM QUANTITIES";
+
+    public static final String ITEMS_AD_INFO_P1_PROMPT = "Auto detect based off of file: ";
+
+    public static final String ITEMS_AD_INFO_P1_NO_ENTRIES = "No entries file to run auto detect on!";
+
+    public static final String ITEMS_AD_INFO_P2_PROMPT = "Items Quantities Status:";
+
+    public static final String ITEMS_AD_INFO_P2_SAVED = "Quantities Confirmed!";
+
+    public static final String ITEMS_AD_INFO_P2_NOT_SAVED = "Quantities are not confirmed!";
 
     /* DIALOGUE STRINGS *************************************************************/
 
@@ -145,6 +167,24 @@ public class ProgramStrings {
 
     public static final String DIALOGUE_ITEMS_AD_CONTINUE_ERROR = "You haven't selected any values which would identify your raffle items!";
 
+    public static final String DIALOGUE_ITEMS_AD_QUANTITIES_WARNING = "You have one or more items with a quantity of zero." +
+            "\nIs this intended? " +
+            "\nSelecting yes will finish the confirm quantities process.";
+
+    public static final String DIALOGUE_ITEMS_AD_QUANTITIES_ERROR = "There are one or more quantity values which are not a number!\n" +
+            "All quantities MUST be in the form of a non decimal number, such as \"1\" or \"44\"";
+
+    public static final String DIALOGUE_ITEMS_AD_QUANTITIES_SUCCESS = "Successfully Confirmed Quantities!";
+
+    public static final String DIALOGUE_ITEMS_AD_NAV_AWAY_TITLE = "Warning";
+
+    public static final String DIALOGUE_ITEMS_AD_NAV_AWAY_MESSAGE = "You haven't saved your item quantities!" +
+            "\nAre you sure you want to navigate away from this page?";
+
+    public static final String DIALOGUE_SUCCESS_TITLE = "Success";
+
+    public static final String QUANTITY_COLUMN_NAME = "Quantity";
+
     /**
      * Converts a string to HTML so lines can wrap within a JLabel.
      * Surrounds the string with "<html> <html>" tags.
@@ -153,6 +193,10 @@ public class ProgramStrings {
      */
     public static final String strToHTML(String s) {
         return "<html>" + s + "</html>";
+    }
+
+    public static final String getUnderlinedHTMLString(String s) {
+        return strToHTML("<u>" + s + "</u>");
     }
 
 }

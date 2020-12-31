@@ -43,9 +43,9 @@ public class InformationPanel extends DisplayPanel {
     public void setLoadEntries() {
         JLabel status;
         if (RaffleDataStorage.hasEntriesFile())
-            status = ProgramDefaults.getCenterAlignedInteractionLabel(ProgramStrings.strToHTML("<u>" + ProgramStrings.ENTRIES_INFORMATION_FILE_STATUS_FILE_LOADED + "</u>"));
+            status = ProgramDefaults.getCenterAlignedInteractionLabel(ProgramStrings.getUnderlinedHTMLString(ProgramStrings.ENTRIES_INFORMATION_FILE_STATUS_FILE_LOADED));
         else
-            status = ProgramDefaults.getCenterAlignedInteractionLabel(ProgramStrings.strToHTML("<u>" + ProgramStrings.ENTRIES_INFORMATION_FILE_STATUS_NO_FILE_LOADED + "</u>"));
+            status = ProgramDefaults.getCenterAlignedInteractionLabel(ProgramStrings.getUnderlinedHTMLString(ProgramStrings.ENTRIES_INFORMATION_FILE_STATUS_NO_FILE_LOADED));
         updateInformation(
             ProgramDefaults.getCenterAlignedInteractionLabel(ProgramStrings.ENTRIES_INFORMATION_FILE_STATUS_PROMPT),
             status
@@ -54,12 +54,28 @@ public class InformationPanel extends DisplayPanel {
 
     @Override
     public void setLoadItems_autoDetect_pt1() {
-
+        JLabel status;
+        if (RaffleDataStorage.hasEntriesFile())
+            status = ProgramDefaults.getCenterAlignedInteractionLabel(ProgramStrings.getUnderlinedHTMLString(RaffleDataStorage.getEntriesFileString()));
+        else
+            status = ProgramDefaults.getCenterAlignedInteractionLabel(ProgramStrings.getUnderlinedHTMLString(ProgramStrings.ITEMS_AD_INFO_P1_NO_ENTRIES));
+        updateInformation(
+                ProgramDefaults.getCenterAlignedInteractionLabel(ProgramStrings.ITEMS_AD_INFO_P1_PROMPT),
+                status
+        );
     }
 
     @Override
     public void setLoadItems_autoDetect_pt2() {
-
+        JLabel status;
+        if (RaffleDataStorage.hasItemsFile())
+            status = ProgramDefaults.getCenterAlignedInteractionLabel(ProgramStrings.getUnderlinedHTMLString(ProgramStrings.ITEMS_AD_INFO_P2_SAVED));
+        else
+            status = ProgramDefaults.getCenterAlignedInteractionLabel(ProgramStrings.getUnderlinedHTMLString(ProgramStrings.ITEMS_AD_INFO_P2_NOT_SAVED));
+        updateInformation(
+                ProgramDefaults.getCenterAlignedInteractionLabel(ProgramStrings.ITEMS_AD_INFO_P2_PROMPT),
+                status
+        );
     }
 
     @Override

@@ -58,15 +58,35 @@ public class VerticalTabs extends JPanel implements MouseListener {
         add(raffleWinners);
     }
 
+    public void changeNavLocation(NavigationLocations newLocation) {
+        selectedTab.setSelected(false);
+        switch (newLocation) {
+            case HOME:
+                selectedTab = homeTab;
+                break;
+            case ENTRIES:
+                selectedTab = loadEntries;
+                break;
+            case ITEMS:
+                selectedTab = loadItems;
+                break;
+            case FILTER:
+                selectedTab = removeDuplicates;
+                break;
+            case WINNERS:
+                selectedTab = raffleWinners;
+                break;
+        }
+        System.out.println("CHANGING TAB TO: " + selectedTab.navKey);
+        selectedTab.setSelected(true);
+    }
+
     @Override
     public void mouseClicked(MouseEvent e) {
         if (e.getSource() instanceof TabItem) {
             TabItem source = (TabItem) e.getSource();
             if (source != selectedTab) {
-                selectedTab.setSelected(false);
-                selectedTab = source;
-                selectedTab.setSelected(true);
-                listener.firePropertyChange("NAV", null, selectedTab.navKey);
+                listener.firePropertyChange("NAV", null, source.navKey);
             }
         }
     }

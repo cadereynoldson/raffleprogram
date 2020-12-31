@@ -32,7 +32,7 @@ public class SpreadSheet {
         rows = new ArrayList<Row>();
     }
     
-    public Particle getPartice(int row, int column) {
+    public Particle getParticle(int row, int column) {
         return rows.get(row).get(column);
     }
     
@@ -207,7 +207,6 @@ public class SpreadSheet {
      */
     public Object[][] getObjectRepresentation() {
         Object[][] sheet = new Object[rows.size()][columns.size()];
-        printSheet();
         for (int i = 0; i < rows.size(); i++) {
             Row current = rows.get(i);
             for (int j = 0; j < columns.size(); j++) {

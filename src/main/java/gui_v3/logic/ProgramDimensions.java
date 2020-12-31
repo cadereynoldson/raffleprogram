@@ -20,6 +20,67 @@ public class ProgramDimensions {
 
     public static final GridBagConstraints INFORMATION_CONSTRAINTS = getInformationConstraints();
 
+    public static final GridBagConstraints ITEMS_ADP2_BRIEF_DESC_CONSTRAINTS = getADBriefDescConstraints();
+
+    public static final GridBagConstraints ITEMS_ADP2_TABLE_CONSTRAINTS = getADTableConstraints();
+
+    public static final GridBagConstraints ITEMS_ADP2_BACK_CONSTRAINTS = getADBackConstraints();
+
+    public static final GridBagConstraints ITEMS_ADP2_CONFIRM_QUANTITIES = getADConfirmConstraints();
+
+    private static GridBagConstraints getGridBagConstraints(int gridx, int gridy, int gridwidth, int gridheight,
+            Insets insets, double weightx, double weighty, int anchor, int fill) {
+        GridBagConstraints c = new GridBagConstraints();
+        c.gridx = gridx;
+        c.gridy = gridy;
+        c.gridwidth = gridwidth;
+        c.gridheight = gridheight;
+        c.insets = insets;
+        c.weightx = weightx;
+        c.weighty = weighty;
+        c.anchor = anchor;
+        c.fill = fill;
+        return c;
+    }
+
+    private static GridBagConstraints getADBackConstraints() {
+        return getGridBagConstraints(1, 3, 1, 1, new Insets(0, 50, 20, 50),
+                0.5, 0.2, GridBagConstraints.LAST_LINE_START, GridBagConstraints.BOTH);
+    }
+
+    private static GridBagConstraints getADConfirmConstraints() {
+        return getGridBagConstraints(3, 3, 1, 1, new Insets(0, 50, 20, 50),
+                0.5, 0.2, GridBagConstraints.LAST_LINE_START, GridBagConstraints.BOTH);
+    }
+
+    private static GridBagConstraints getADTableConstraints() {
+        GridBagConstraints c = new GridBagConstraints();
+        c.gridx = 1;
+        c.gridy = 2;
+        c.gridwidth = 3;
+        c.gridheight = 1;
+        c.insets = new Insets(0, 50, 20, 50);
+        c.weightx = 1;
+        c.weighty = 0.2;
+        c.anchor = GridBagConstraints.CENTER;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        return c;
+    }
+
+    private static GridBagConstraints getADBriefDescConstraints() {
+        GridBagConstraints c = new GridBagConstraints();
+        c.gridx = 1;
+        c.gridy = 1;
+        c.gridwidth = 3;
+        c.gridheight = 1;
+        c.insets = new Insets(20, 50, 20, 50);
+        c.weightx = 1;
+        c.weighty = 0.2;
+        c.anchor = GridBagConstraints.CENTER;
+        c.fill = GridBagConstraints.BOTH;
+        return c;
+    }
+
     private static GridBagConstraints getInformationConstraints() {
         GridBagConstraints c = new GridBagConstraints();
         c.gridx = 2;

@@ -4,6 +4,8 @@ import gui_v3.BaseComponents.*;
 import gui_v3.logic.*;
 
 import javax.swing.*;
+import javax.swing.plaf.BorderUIResource;
+import javax.swing.plaf.ColorUIResource;
 import java.awt.*;
 import java.beans.PropertyChangeEvent;
 import java.io.File;
@@ -74,6 +76,8 @@ public class DisplayFrame extends JFrame {
             } else { //Handle manual navigation.
 
             }
+        } else if (propertyChangeEvent.getPropertyName().equals(PropertyChangeKeys.ITEMS_AD_QUANTITIES_CONFIRMED)) { //If quantities are confirmed, update panel.
+            informationPanel.setLoadItems_autoDetect_pt2();
         }
         revalidate();
         repaint();
@@ -85,14 +89,13 @@ public class DisplayFrame extends JFrame {
             ProgramDefaults.displayError(ProgramStrings.DIALOGUE_ITEMS_AD_CONTINUE_ERROR, ProgramStrings.DIALOGUE_LOAD_ERROR_TITLE, this);
         } else if (navLoc == NavigationLocations.ITEMS_AUTO_DETECT_PT2){
             lastItemLocation = navLoc;
-            interactionPanel.setContents(lastItemLocation);
-            informationPanel.setContents(lastItemLocation);
-            descriptionPanel.setContents(lastItemLocation);
-        } else if (navLoc == NavigationLocations.ITEMS_AUTO_DETECT_PT1) {
+            currentLocation = lastItemLocation;
+            updateContents();
+        } else if (navLoc == NavigationLocations.ITEMS_AUTO_DETECT_PT1) { //If navigating to this location, ALL PREVIOUS AUTO DETECTION IS WIPED! //TODO: Potentially update???
             lastItemLocation = navLoc;
-            interactionPanel.setContents(lastItemLocation);
-            informationPanel.setContents(lastItemLocation);
-            descriptionPanel.setContents(lastItemLocation);
+            currentLocation = lastItemLocation;
+            RaffleDataStorage.resetItemsData();
+            updateContents();
         }
     }
 
@@ -103,15 +106,30 @@ public class DisplayFrame extends JFrame {
     private void handleTabNavigationEvent(PropertyChangeEvent propertyChangeEvent) {
         if (propertyChangeEvent.getPropertyName().equals(PropertyChangeKeys.NAVIGATION_KEY)
                 && propertyChangeEvent.getNewValue() instanceof NavigationLocations) {
+            // Check that quantities have been confirmed if navigating away from auto detect part 2.
+            if (currentLocation == NavigationLocations.ITEMS_AUTO_DETECT_PT2 && !RaffleDataStorage.hasItemsFile()) {
+                if (ProgramDefaults.displayYesNoConfirm(ProgramStrings.DIALOGUE_ITEMS_AD_NAV_AWAY_MESSAGE, ProgramStrings.DIALOGUE_ITEMS_AD_NAV_AWAY_TITLE, this)
+                    != JOptionPane.OK_OPTION) //If the user selects anything other than ok, cancel navigation.
+                    return;
+            }
             currentLocation = (NavigationLocations) propertyChangeEvent.getNewValue();
+            tabsAndProgressCircle.changeNavLocation(currentLocation);
+            System.out.println(currentLocation);
             if (currentLocation == NavigationLocations.ITEMS)  //If navigating to the items tab - navigate using the last items location recorded.
                 currentLocation = lastItemLocation;
-            informationPanel.setContents(currentLocation);
-            interactionPanel.setContents(currentLocation);
-            descriptionPanel.setContents(currentLocation);
-            revalidate();
-            repaint();
+            updateContents();
         }
+    }
+
+    /**
+     * Updates the contents of ALL panels!
+     */
+    private void updateContents() {
+        informationPanel.setContents(currentLocation);
+        interactionPanel.setContents(currentLocation);
+        descriptionPanel.setContents(currentLocation);
+        revalidate();
+        repaint();
     }
 
     private void runRaffle() {
@@ -143,6 +161,7 @@ public class DisplayFrame extends JFrame {
                 if (interactionPanel.getCenterPanel() instanceof InteractionEntriesCenter) { //Just double check the entries panel is still selected.
                     ((InteractionEntriesCenter) interactionPanel.getCenterPanel()).setLoadedFileText(RaffleDataStorage.getEntriesFileString());
                     informationPanel.setLoadEntries();
+                    lastItemLocation = NavigationLocations.ITEMS_AUTO_DETECT_PT1;
                 }
             } catch (IllegalArgumentException e) {
                 ProgramDefaults.displayError(ProgramStrings.DIALOGUE_LOAD_ERROR, ProgramStrings.DIALOGUE_LOAD_ERROR_TITLE, this);
@@ -162,7 +181,7 @@ public class DisplayFrame extends JFrame {
                 if (interactionPanel.getCenterPanel() instanceof InteractionEntriesCenter) { //Just double check the entries panel is still selected.
                     ((InteractionEntriesCenter) interactionPanel.getCenterPanel()).setLoadedFileText(ProgramStrings.ENTRIES_INFORMATION_FILE_STATUS_NO_FILE_LOADED);
                     informationPanel.setLoadEntries();
-                    //TODO: Handle other location manipulation. (maybe??)
+                    lastItemLocation = NavigationLocations.ITEMS_AUTO_DETECT_PT1;
                 }
             }
         } else { //MAKE BEEP NOISE!
@@ -170,7 +189,15 @@ public class DisplayFrame extends JFrame {
         }
     }
 
+    public static void initLookAndFeel() {
+        //Table things
+        UIDefaults m = UIManager.getLookAndFeelDefaults();
+        m.put("TableHeader.cellBorder", new BorderUIResource.LineBorderUIResource(ProgramColors.FOREGROUND_COLOR)); //Set cell header color.
+        m.put("Table.focusCellHighlightBorder", BorderFactory.createLineBorder(ProgramColors.TABLE_HIGHLIGHT_CELL_COLOR, 1));
+    }
+
     public static void main(String[] args) {
+        initLookAndFeel();
         java.awt.EventQueue.invokeLater(() ->
                 new DisplayFrame().setVisible(true));
     }
