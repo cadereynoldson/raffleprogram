@@ -28,6 +28,18 @@ public class ProgramDimensions {
 
     public static final GridBagConstraints ITEMS_ADP2_CONFIRM_QUANTITIES = getADConfirmConstraints();
 
+    public static final GridBagConstraints ITEMS_MP2_BRIEF_DESC_CONSTRAINTS = getManualBriefDescConstraints();
+
+    public static final GridBagConstraints ITEMS_MP2_CHECKBOX_CONSTRAINTS = getManualCheckboxPaneConstraints();
+
+    public static final GridBagConstraints ITEMS_MP2_COMBOBOX_CONSTRAINTS = getManualComboBoxConstraints();
+
+    public static final GridBagConstraints ITEMS_MP2_TABLE_CONSTRAINTS = getManualTableConstraints();
+
+    public static final GridBagConstraints ITEMS_MP2_BACK_CONSTRAINTS = getManualBackConstraints();
+
+    public static final GridBagConstraints ITEMS_MP2_CONFIRM_CONSTRAINTS = getManualConfirmConstraints();
+
     private static GridBagConstraints getGridBagConstraints(int gridx, int gridy, int gridwidth, int gridheight,
             Insets insets, double weightx, double weighty, int anchor, int fill) {
         GridBagConstraints c = new GridBagConstraints();
@@ -41,6 +53,36 @@ public class ProgramDimensions {
         c.anchor = anchor;
         c.fill = fill;
         return c;
+    }
+
+    private static GridBagConstraints getManualTableConstraints() {
+        return getGridBagConstraints(1, 3, 3, 1, new Insets(0, 50, 20, 50),
+                1, 0.5, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL);
+    }
+
+    private static GridBagConstraints getManualBriefDescConstraints() {
+        return getGridBagConstraints(1, 1, 3, 1, new Insets(0, 50, 20, 50),
+                1, 0.2, GridBagConstraints.FIRST_LINE_START, GridBagConstraints.BOTH);
+    }
+
+    private static GridBagConstraints getManualCheckboxPaneConstraints() {
+        return getGridBagConstraints(1, 2, 1, 1, new Insets(0, 50, 20, 50),
+                0.5, 0.2, GridBagConstraints.LINE_START, GridBagConstraints.BOTH);
+    }
+
+    private static GridBagConstraints getManualComboBoxConstraints() {
+        return getGridBagConstraints(3, 2, 1, 1, new Insets(0, 50, 20, 50),
+                0.5, 0.2, GridBagConstraints.LAST_LINE_START, GridBagConstraints.BOTH);
+    }
+
+    private static GridBagConstraints getManualBackConstraints() {
+        return getGridBagConstraints(1, 4, 1, 1, new Insets(0, 50, 20, 50),
+                0.5, 0.2, GridBagConstraints.LAST_LINE_START, GridBagConstraints.BOTH);
+    }
+
+    private static GridBagConstraints getManualConfirmConstraints() {
+        return getGridBagConstraints(3, 4, 1, 1, new Insets(0, 50, 20, 50),
+                0.5, 0.2, GridBagConstraints.LAST_LINE_START, GridBagConstraints.BOTH);
     }
 
     private static GridBagConstraints getADBackConstraints() {

@@ -43,13 +43,9 @@ public class InteractionEntriesCenter extends JPanel {
         JPanel p = ProgramDefaults.getBlankPanel();
         p.setLayout(new GridLayout(1, 0));
         JButton selectButton = ProgramDefaults.getButton(ProgramStrings.ENTRIES_INFORMATION_BUTTON_SELECT_FILE);
-        selectButton.addActionListener(event -> {
-            pcs.firePropertyChange(PropertyChangeKeys.LOAD_ENTRIES, null, null);
-        });
+        selectButton.addActionListener(event -> pcs.firePropertyChange(PropertyChangeKeys.LOAD_ENTRIES, null, null));
         JButton resetButton = ProgramDefaults.getButton(ProgramStrings.ENTRIES_INFORMATION_BUTTON_RESET_FILE);
-        resetButton.addActionListener(event -> {
-            pcs.firePropertyChange(PropertyChangeKeys.RESET_ENTRIES, null, null);
-        });
+        resetButton.addActionListener(event -> pcs.firePropertyChange(PropertyChangeKeys.RESET_ENTRIES, null, null));
         p.add(ProgramDefaults.createSpacedPanel(resetButton));
         p.add(ProgramDefaults.createSpacedPanel(selectButton));
         return p;

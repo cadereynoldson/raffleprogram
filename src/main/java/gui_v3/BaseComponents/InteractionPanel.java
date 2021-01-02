@@ -4,7 +4,6 @@ import gui_v3.logic.*;
 
 import javax.swing.*;
 import java.awt.*;
-import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 
@@ -48,6 +47,22 @@ public class InteractionPanel extends DisplayPanel {
         repaint();
     }
 
+    /**
+     * Updates the components based on navigation to an item location.
+     * @param newTitle the new title of the panel.
+     * @param newLocation the new location to display.
+     */
+    private void updateItemsComponents(String newTitle, NavigationLocations newLocation) {
+        if (centerPanel instanceof InteractionItemsCenter) {
+            ((InteractionItemsCenter) centerPanel).setLocationDisplayed(newLocation);
+            title.setText(newTitle);
+            revalidate();
+            repaint();
+        } else {
+            resetComponents(newTitle, new InteractionItemsCenter(pcs, newLocation));
+        }
+    }
+
     @Override
     public void setHome() {
         resetComponents(ProgramStrings.INTERACTION_HOME_TITLE, new InteractionHomeCenter(pcs));
@@ -60,41 +75,26 @@ public class InteractionPanel extends DisplayPanel {
 
     @Override
     public void setLoadItems_autoDetect_pt1() {
-        resetComponents(ProgramStrings.ITEMS_AD_TITLE_P1, new InteractionItemsCenter(pcs, NavigationLocations.ITEMS_AUTO_DETECT_PT1));
+        updateItemsComponents(ProgramStrings.ITEMS_AD_TITLE_P1, NavigationLocations.ITEMS_AUTO_DETECT_PT1);
     }
 
     @Override
     public void setLoadItems_autoDetect_pt2() {
-        if (centerPanel instanceof InteractionItemsCenter) {//If the items panel is being displayed, notify the displayed center panel to update to a new display instance.
-            ((InteractionItemsCenter) centerPanel).setLocationDisplayed(NavigationLocations.ITEMS_AUTO_DETECT_PT2);
-            title.setText(ProgramStrings.ITEMS_AD_TITLE_P2);
-            repaint();
-        } else
-            resetComponents(ProgramStrings.ITEMS_AD_TITLE_P2, new InteractionItemsCenter(pcs, NavigationLocations.ITEMS_AUTO_DETECT_PT2));
+        updateItemsComponents(ProgramStrings.ITEMS_AD_TITLE_P2, NavigationLocations.ITEMS_AUTO_DETECT_PT2);
     }
 
     @Override
     public void setLoadItems_manual_pt1() {
-        if (centerPanel instanceof InteractionItemsCenter) { //If the items panel is being displayed, notify the displayed center panel to update to a new display instance.
-
-        }
+        updateItemsComponents(ProgramStrings.ITEMS_MANUAL_P1_TITLE, NavigationLocations.ITEMS_MANUAL_PT1);
     }
 
     @Override
     public void setLoadItems_manual_pt2() {
-        if (centerPanel instanceof InteractionItemsCenter) { //If the items panel is being displayed, notify the displayed center panel to update to a new display instance.
-
-        }
+        updateItemsComponents(ProgramStrings.ITEMS_MANUAL_P2_TITLE, NavigationLocations.ITEMS_MANUAL_PT2);
     }
 
     @Override
     public void setLoadItems_manual_pt3() {
-        if (centerPanel instanceof InteractionItemsCenter) { //If the items panel is being displayed, notify the displayed center panel to update to a new display instance.
-
-        }
-    }
-
-    private void itemsNavigation(PropertyChangeEvent propertyChangeEvent) {
     }
 
     @Override

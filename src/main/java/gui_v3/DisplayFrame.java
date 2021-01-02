@@ -5,7 +5,6 @@ import gui_v3.logic.*;
 
 import javax.swing.*;
 import javax.swing.plaf.BorderUIResource;
-import javax.swing.plaf.ColorUIResource;
 import java.awt.*;
 import java.beans.PropertyChangeEvent;
 import java.io.File;
@@ -72,31 +71,39 @@ public class DisplayFrame extends JFrame {
         } else if (propertyChangeEvent.getPropertyName().equals(PropertyChangeKeys.ITEMS_NAV_CHANGE)) {
             NavigationLocations placeholder = (NavigationLocations) propertyChangeEvent.getNewValue();
             if (placeholder == NavigationLocations.ITEMS_AUTO_DETECT_PT2 || placeholder == NavigationLocations.ITEMS_AUTO_DETECT_PT1) { //Check for auto detect nav.
-                handleAutoDetectNavigation(placeholder);
+                handleItemsADNavigation(placeholder);
             } else { //Handle manual navigation.
-
+                handleItemsManualNavigation(placeholder);
             }
-        } else if (propertyChangeEvent.getPropertyName().equals(PropertyChangeKeys.ITEMS_AD_QUANTITIES_CONFIRMED)) { //If quantities are confirmed, update panel.
+        } else if (propertyChangeEvent.getPropertyName().equals(PropertyChangeKeys.ITEMS_AD_QUANTITIES_CONFIRMED)) { //If quantities are confirmed, update information panel.
             informationPanel.setLoadItems_autoDetect_pt2();
+        } else if (propertyChangeEvent.getPropertyName().equals(PropertyChangeKeys.RESET_ITEMS)) {
+            resetItems();
+        } else if (propertyChangeEvent.getPropertyName().equals(PropertyChangeKeys.LOAD_ITEMS)) {
+            loadItems();
         }
         revalidate();
         repaint();
     }
 
-    private void handleAutoDetectNavigation(NavigationLocations navLoc) {
+    private void handleItemsManualNavigation(NavigationLocations navLoc) {
+        if (navLoc == NavigationLocations.ITEMS_MANUAL_PT2 && !RaffleDataStorage.hasItemsFile()) //Check that an items spreadsheet exists when going to part one. -
+            ProgramDefaults.displayError(ProgramStrings.DIALOGUE_ITEMS_MANUAL_NO_FILE_MESSAGE, ProgramStrings.DIALOGUE_LOAD_ERROR_TITLE, this);
+        lastItemLocation = navLoc;
+        currentLocation = lastItemLocation;
+        updateContents();
+    }
+
+    private void handleItemsADNavigation(NavigationLocations navLoc) {
         if (navLoc == NavigationLocations.ITEMS_AUTO_DETECT_PT2
                 && RaffleDataStorage.getSelectedAutoDetectValues().isEmpty()) { //Display error that you cannot continue without checking a box.
             ProgramDefaults.displayError(ProgramStrings.DIALOGUE_ITEMS_AD_CONTINUE_ERROR, ProgramStrings.DIALOGUE_LOAD_ERROR_TITLE, this);
-        } else if (navLoc == NavigationLocations.ITEMS_AUTO_DETECT_PT2){
-            lastItemLocation = navLoc;
-            currentLocation = lastItemLocation;
-            updateContents();
         } else if (navLoc == NavigationLocations.ITEMS_AUTO_DETECT_PT1) { //If navigating to this location, ALL PREVIOUS AUTO DETECTION IS WIPED! //TODO: Potentially update???
-            lastItemLocation = navLoc;
-            currentLocation = lastItemLocation;
             RaffleDataStorage.resetItemsData();
-            updateContents();
         }
+        lastItemLocation = navLoc;
+        currentLocation = lastItemLocation;
+        updateContents();
     }
 
     /**
@@ -151,23 +158,19 @@ public class DisplayFrame extends JFrame {
             if (promptValue != JOptionPane.YES_OPTION)
                 return;
         }
-        JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setDialogTitle("Select Entries File");
-        fileChooser.setCurrentDirectory(new File(System.getProperty("user.dir")));
-        fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+        JFileChooser fileChooser = ProgramDefaults.getFileChooser(ProgramStrings.ENTRIES_FILE_CHOOSER_TITLE, JFileChooser.FILES_AND_DIRECTORIES);
         if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
             try {
                 RaffleDataStorage.setEntriesSheet(fileChooser.getSelectedFile());
-                if (interactionPanel.getCenterPanel() instanceof InteractionEntriesCenter) { //Just double check the entries panel is still selected.
-                    ((InteractionEntriesCenter) interactionPanel.getCenterPanel()).setLoadedFileText(RaffleDataStorage.getEntriesFileString());
-                    informationPanel.setLoadEntries();
-                    lastItemLocation = NavigationLocations.ITEMS_AUTO_DETECT_PT1;
-                }
             } catch (IllegalArgumentException e) {
                 ProgramDefaults.displayError(ProgramStrings.DIALOGUE_LOAD_ERROR, ProgramStrings.DIALOGUE_LOAD_ERROR_TITLE, this);
             }
         }
-
+        if (interactionPanel.getCenterPanel() instanceof InteractionEntriesCenter) { //Just double check the entries panel is still selected.
+            ((InteractionEntriesCenter) interactionPanel.getCenterPanel()).setLoadedFileText(RaffleDataStorage.getEntriesFileString());
+            informationPanel.setLoadEntries();
+            lastItemLocation = NavigationLocations.ITEMS_AUTO_DETECT_PT1;
+        }
     }
 
     /**
@@ -188,6 +191,34 @@ public class DisplayFrame extends JFrame {
             java.awt.Toolkit.getDefaultToolkit().beep();
         }
     }
+
+    private void resetItems() {
+        if (RaffleDataStorage.hasItemsFile()) {
+            RaffleDataStorage.resetItemsData();
+            if (interactionPanel.getCenterPanel() instanceof InteractionItemsCenter) {
+                ((InteractionItemsCenter) interactionPanel.getCenterPanel()).setLoadedFileText(ProgramStrings.ENTRIES_INFORMATION_FILE_STATUS_NO_FILE_LOADED);
+                informationPanel.setLoadItems_manual_pt1();
+            }
+        } else {
+            java.awt.Toolkit.getDefaultToolkit().beep();
+        }
+    }
+
+    private void loadItems() {
+        JFileChooser fileChooser = ProgramDefaults.getFileChooser(ProgramStrings.ITEMS_MANUAL_FILE_CHOOSER_TITLE, JFileChooser.FILES_AND_DIRECTORIES);
+        if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+            try {
+                RaffleDataStorage.setItemsSheet(fileChooser.getSelectedFile());
+            } catch (IllegalArgumentException e) {
+                ProgramDefaults.displayError(ProgramStrings.DIALOGUE_LOAD_ERROR, ProgramStrings.DIALOGUE_LOAD_ERROR_TITLE, this);
+            }
+            if (interactionPanel.getCenterPanel() instanceof  InteractionItemsCenter) {
+                ((InteractionItemsCenter) interactionPanel.getCenterPanel()).setLoadedFileText(RaffleDataStorage.getItemsFileString());
+                informationPanel.setLoadItems_manual_pt1();
+            }
+        }
+    }
+
 
     public static void initLookAndFeel() {
         //Table things

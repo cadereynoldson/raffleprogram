@@ -70,6 +70,8 @@ public class ProgramStrings {
 
     public static final String ENTRIES_TITLE = "Load Raffle Entries";
 
+    public static final String ENTRIES_FILE_CHOOSER_TITLE = "Select Entries File";
+
     public static final String ENTRIES_BRIEF_DESCRIPTION = strToHTML("<center>" +
             "Load in the file containing the information of those who entered your raffle.<center>");
 
@@ -89,11 +91,10 @@ public class ProgramStrings {
 
     public static final String ITEMS_AUTO_DETECT_TOGGLE = "Auto Detect";
 
-    public static final String ITEMS_AD_TITLE_P1 = "Auto Detect Items Part 1";
+    public static final String ITEMS_AD_TITLE_P1 = "Load Items (Auto Detect) PT. 1";
 
     public static final String ITEMS_AD_BRIEF_DESCRIPTION_P1 = strToHTML("<center>Ease your raffle process letting an algorithm detect the items you're raffling." +
-                    "<br/>Check the values which would indicate what would uniquely identify a category of raffle item." +
-                    "<br/>Common values for this are size, and color. Combine the two for raffling by size and color!</center>");
+                    "<br/>Check the values which would indicate what would uniquely identify a category of raffle item.</center>");
 
 
     public static final String ITEMS_AD_DETECTED_PROMPT = strToHTML("<center>Detected Item Identifiers:</center>");
@@ -104,7 +105,7 @@ public class ProgramStrings {
 
     public static final String ITEMS_AD_CONTINUE_BUTTON = "CONTINUE";
 
-    public static final String ITEMS_AD_DESCRIPTION_P1_TITLE = "Items AD Part 1 Description";
+    public static final String ITEMS_AD_DESCRIPTION_P1_TITLE = "Load Items (AD PT. 1) Description";
 
     public static final String ITEMS_AD_DESCRIPTION_P1_L1 = strToHTML("Select the checkboxes which would determine a type of item you're raffling.");
 
@@ -114,11 +115,11 @@ public class ProgramStrings {
     public static final String ITEMS_AD_DESCRIPTION_P1_L3 = strToHTML("Checking multiple boxes would be applicable if you're raffling multiple colorways!" +
                     " An example of this would be to check the checkbox corresponding to size and the checkbox corresponding to color.");
 
-    public static final String ITEMS_AD_TITLE_P2 = "Auto Detect Items Part 2";
+    public static final String ITEMS_AD_TITLE_P2 = "Load Items (Auto Detect) PT. 2";
 
     public static final String ITEMS_AD_BRIEF_DESCRIPTION_P2 = strToHTML("<center>Fill in the following table with the number of items you have to raffle for the individual items!</center>");
 
-    public static final String ITEMS_AD_DESCRIPTION_P2_TITLE = "Items AD Part 2 Description";
+    public static final String ITEMS_AD_DESCRIPTION_P2_TITLE = "Load Items (AD PT. 2) Description";
 
     public static final String ITEMS_AD_DESCRIPTION_P2_L1 = strToHTML("Fill out the table with the quantities of items you have to raffle.");
 
@@ -139,6 +140,47 @@ public class ProgramStrings {
     public static final String ITEMS_AD_INFO_P2_SAVED = "Quantities Confirmed!";
 
     public static final String ITEMS_AD_INFO_P2_NOT_SAVED = "Quantities are not confirmed!";
+
+    public static final String ITEMS_MANUAL_P1_TITLE = "Load Items (Manual) PT. 1";
+
+    public static final String ITEMS_MANUAL_P1_BRIEF_DESCRIPTION = strToHTML("<center>Manually load in the items of your raffle." +
+            "<br/>This is useful if you already have a spreadsheet with counts of your items to raffle.</center>");
+
+    public static final String ITEMS_MANUAL_DESCRIPTION_P1_L1 = strToHTML("Manually load in the items of your raffle.");
+
+    public static final String ITEMS_MANUAL_DESCRIPTION_P1_L2 = strToHTML("This file should at minimum contain columns of:" +
+            "<br/> - Identifiers of the items you'll be raffling (Such as size, color)" +
+            "<br/> - Quantities you have of each item.");
+
+    public static final String ITEMS_MANUAL_DESCRIPTION_P1_L3 = strToHTML("Click continue to organize the data for the program.");
+
+
+    public static final String ITEMS_MANUAL_FILE_PROMPT = "Selected Items File: ";
+
+    public static final String ITEMS_MANUAL_FILE_NO_FILE = "No file loaded!";
+
+    public static final String ITEMS_MANUAL_LOAD_FILE = "LOAD FILE";
+
+    public static final String ITEMS_MANUAL_RESET_FILE = "RESET FILE";
+
+    public static final String ITEMS_MANUAL_CONTINUE = "CONTINUE";
+
+    public static final String ITEMS_MANUAL_CONFIRM = "CONFIRM";
+
+    public static final String ITEMS_MANUAL_BACK = "BACK";
+
+    public static final String ITEMS_MANUAL_P2_TITLE = "Load Items (Manual) PT. 2";
+
+    public static final String ITEMS_MANUAL_P2_BRIEF_DESCRIPTION = strToHTML("<center>Format the data to run through the program." +
+            "<br/>See the description for the requirements of this step.</center>");
+
+    public static final String ITEMS_MANUAL_P2_WINNERS_BY = strToHTML("<center>Choose Your Winners By:</center>");
+
+    public static final String ITEMS_MANUAL_P2_SHOE_COUNTS = strToHTML("<center>Column of data with item counts</center>");
+
+    public static final String ITEMS_MANUAL_P2_TABLE_TITLE = "Reference Table";
+
+    public static final String ITEMS_MANUAL_FILE_CHOOSER_TITLE = "Select Items File";
 
     /* DIALOGUE STRINGS *************************************************************/
 
@@ -182,6 +224,8 @@ public class ProgramStrings {
             "\nAre you sure you want to navigate away from this page?";
 
     public static final String DIALOGUE_SUCCESS_TITLE = "Success";
+
+    public static final String DIALOGUE_ITEMS_MANUAL_NO_FILE_MESSAGE = "You haven't loaded in an items file!";
 
     public static final String QUANTITY_COLUMN_NAME = "Quantity";
 

@@ -18,7 +18,4 @@ public class ProgramColors {
     public static final Color TABLE_HIGHLIGHT_CELL_COLOR = new Color(0, 0, 0);
     public static final Color TABLE_BORDER_COLOR = new Color(0);
     public static final Color TABLE_CELL_COLOR = new Color(217, 217, 217);
-    public static final Color TABLE_INPUT_PROMPT_COLOR = new Color(204, 255, 255);
-    public static final Color SCROLLBAR_BACKGROUND_COLOR = new Color(255, 253, 253);
-    public static final Color SCROLLBAR_THUMB_COLOR = new Color(89, 89, 89);
 }

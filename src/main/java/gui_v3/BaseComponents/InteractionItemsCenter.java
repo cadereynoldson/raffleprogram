@@ -26,6 +26,11 @@ public class InteractionItemsCenter extends JPanel {
     /** JTable for auto detect part 2. */
     private JTable autoDetectTable;
 
+    /** JLabel for displaying the name of the loaded file. */
+    private JLabel loadedFileText;
+
+    private JComboBox columnComboBox;
+
     /**
      * Creates a new instance of the interaction items center panel.
      * @param pcs property change support to notify the the master display of changes.
@@ -60,12 +65,11 @@ public class InteractionItemsCenter extends JPanel {
     private void toggleAutoDetect(ActionEvent actionEvent) {
         if (((JCheckBox) actionEvent.getSource()).isSelected()) {
             RaffleDataStorage.setAutoDetect(true);
-            setAutoDetect_P1();
+            pcs.firePropertyChange(PropertyChangeKeys.ITEMS_NAV_CHANGE, null, NavigationLocations.ITEMS_AUTO_DETECT_PT1);
         } else {
             RaffleDataStorage.setAutoDetect(false);
-            setManual_P1();
+            pcs.firePropertyChange(PropertyChangeKeys.ITEMS_NAV_CHANGE, null, NavigationLocations.ITEMS_MANUAL_PT1);
         }
-        repaint();
     }
 
     /**
@@ -281,11 +285,78 @@ public class InteractionItemsCenter extends JPanel {
     /* MANUAL INPUT METHODS ********************************************************************************/
 
     private void setManual_P1() {
+        removeAll();
+        setLayout(new GridLayout(0, 1));
+        add(ProgramDefaults.getCenterAlignedInteractionLabel(ProgramStrings.ITEMS_MANUAL_P1_BRIEF_DESCRIPTION));
+        if (RaffleDataStorage.hasItemsFile()) {
+            loadedFileText = ProgramDefaults.getFileDisplayLabel(RaffleDataStorage.getItemsFileString());
+        } else {
+            loadedFileText = ProgramDefaults.getFileDisplayLabel(ProgramStrings.ITEMS_MANUAL_FILE_NO_FILE);
+        }
+        //Text display
+        JPanel textPanel = ProgramDefaults.getBlankPanel();
+        textPanel.setLayout(new GridLayout(0, 2));
+        textPanel.add(ProgramDefaults.getRightAlignedInteractionLabel(ProgramStrings.ITEMS_MANUAL_FILE_PROMPT));
+        textPanel.add(loadedFileText);
+        //Button panel
+        JPanel buttonPanel = ProgramDefaults.getBlankPanel();
+        buttonPanel.setLayout(new GridLayout(0, 3));
+        JButton resetFile = ProgramDefaults.getButton(ProgramStrings.ITEMS_MANUAL_RESET_FILE);
+        JButton loadFile = ProgramDefaults.getButton(ProgramStrings.ITEMS_MANUAL_LOAD_FILE);
+        JButton cont = ProgramDefaults.getButton(ProgramStrings.ITEMS_MANUAL_CONTINUE);
+        resetFile.addActionListener(event -> pcs.firePropertyChange(PropertyChangeKeys.RESET_ITEMS, null, null));
+        loadFile.addActionListener(event -> pcs.firePropertyChange(PropertyChangeKeys.LOAD_ITEMS, null, null));
+        cont.addActionListener(event -> pcs.firePropertyChange(PropertyChangeKeys.ITEMS_NAV_CHANGE, null, NavigationLocations.ITEMS_MANUAL_PT2));
+        buttonPanel.add(ProgramDefaults.createSpacedPanel(resetFile));
+        buttonPanel.add(ProgramDefaults.createSpacedPanel(loadFile));
+        buttonPanel.add(ProgramDefaults.createSpacedPanel(cont));
+        add(autoDetectToggle);
+        add(textPanel);
+        add(buttonPanel);
+    }
 
+    public void setLoadedFileText(String text) {
+        loadedFileText.setText(ProgramStrings.strToHTML("<u>" + text + "</u>"));
     }
 
     private void setManual_P2() {
+        if (!RaffleDataStorage.hasItemsFile()) {
+            //TODO: Add error handling for this. Another fuck up if you got here lol.
+        } else {
+            removeAll();
+            setLayout(new GridBagLayout());
+            String[] columnNames = RaffleDataStorage.getItemsSheet().getColumnNames();
+            //Build Checklist of items
+            JPanel checklistPanel = ProgramDefaults.getBlankPanel();
+            checklistPanel.setLayout(new GridLayout(0, 1));
+            checklistPanel.add(ProgramDefaults.getCenterAlignedInteractionLabel(ProgramStrings.ITEMS_MANUAL_P2_WINNERS_BY));
+            for (int i = 0; i < columnNames.length; i++) {
+                JCheckBox b = ProgramDefaults.getCheckBox(columnNames[i]);
+                b.setHorizontalAlignment(SwingConstants.LEADING);
+                b.addActionListener(this::manualWinnerCheckboxSelected);
+                checklistPanel.add(b);
+            }
+            //Build ComboBox of column names
+            JPanel comboBoxPanel = ProgramDefaults.getBlankPanel();
+            comboBoxPanel.setLayout(new GridLayout(0, 1));
+            comboBoxPanel.add(ProgramDefaults.getCenterAlignedInteractionLabel(ProgramStrings.ITEMS_MANUAL_P2_SHOE_COUNTS));
+            columnComboBox = ProgramDefaults.getComboBox(columnNames);
+            comboBoxPanel.add(ProgramDefaults.createSpacedPanel(columnComboBox));
+            //Build table for reference and buttons
+            JTable displayTable = ProgramDefaults.getTable(RaffleDataStorage.getItemsSheet());
+            JButton back = ProgramDefaults.getButton(ProgramStrings.ITEMS_MANUAL_BACK);
+            JButton confirm = ProgramDefaults.getButton(ProgramStrings.ITEMS_MANUAL_CONFIRM);
+            //Add everything
+            add(ProgramDefaults.getCenterAlignedInteractionLabel(ProgramStrings.ITEMS_MANUAL_P2_BRIEF_DESCRIPTION), ProgramDimensions.ITEMS_MP2_BRIEF_DESC_CONSTRAINTS);
+            add(checklistPanel, ProgramDimensions.ITEMS_MP2_CHECKBOX_CONSTRAINTS);
+            add(comboBoxPanel, ProgramDimensions.ITEMS_MP2_COMBOBOX_CONSTRAINTS);
+            add(ProgramDefaults.getTableScrollPane(displayTable, ProgramStrings.ITEMS_MANUAL_P2_TABLE_TITLE), ProgramDimensions.ITEMS_MP2_TABLE_CONSTRAINTS);
+            add(ProgramDefaults.createSpacedPanel(back), ProgramDimensions.ITEMS_MP2_BACK_CONSTRAINTS);
+            add(ProgramDefaults.createSpacedPanel(confirm), ProgramDimensions.ITEMS_MP2_CONFIRM_CONSTRAINTS);
+        }
+    }
 
+    private void manualWinnerCheckboxSelected(ActionEvent actionEvent) {
     }
 
     private void setManual_P3() {

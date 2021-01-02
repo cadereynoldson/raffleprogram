@@ -4,6 +4,7 @@ import main_structure.Row;
 import main_structure.SpreadSheet;
 
 import javax.swing.*;
+import javax.swing.border.TitledBorder;
 import javax.swing.plaf.basic.BasicScrollBarUI;
 import javax.swing.table.*;
 import javax.swing.text.JTextComponent;
@@ -149,21 +150,21 @@ public class ProgramDefaults {
 
     /**
      * Creates a spaced panel to avoid over-sized buttons. This will contain the default BUTTON padding of y = 20, and x = 40
-     * @param button the button to contain in the panel.
+     * @param component the button to contain in the panel.
      * @return a spaced panel to avoid over sized buttons.
      */
-    public static JPanel createSpacedPanel(JButton button) {
-        return createSpacedPanel(button, 40, 20);
+    public static JPanel createSpacedPanel(Component component) {
+        return createSpacedPanel(component, 40, 20);
     }
 
     /**
      * Creates a spaced panel to avoid over-sized button.
-     * @param button the button to place at the center of the panel.
+     * @param component the component to place at the center of the panel.
      * @param xPadding the number of pixels to pad the text in the button on the x axis (left and right of the text of the button).
      * @param yPadding the number of pixels to pad the text in the button on the y axis (above and below the text of the button).
      * @return a spaced panel to avoid over sized buttons.
      */
-    public static JPanel createSpacedPanel(JButton button, int xPadding, int yPadding) {
+    public static JPanel createSpacedPanel(Component component, int xPadding, int yPadding) {
         JPanel p = ProgramDefaults.getBlankPanel();
         p.setLayout(new GridBagLayout());
         GridBagConstraints c = new GridBagConstraints();
@@ -176,7 +177,7 @@ public class ProgramDefaults {
         c.ipadx = xPadding;
         c.anchor = GridBagConstraints.CENTER;
         p.setAlignmentY(Component.CENTER_ALIGNMENT);
-        p.add(button, c);
+        p.add(component, c);
         return p;
     }
 
@@ -215,6 +216,12 @@ public class ProgramDefaults {
         return f;
     }
 
+    public static JComboBox<String> getComboBox(String[] strings) {
+        JComboBox<String> box = new JComboBox<>(strings);
+        box.setFont(ProgramFonts.DEFAULT_FONT_LARGE);
+        return box;
+    }
+
     /* TABLE METHODS *****************************************************/
 
     /**
@@ -234,10 +241,22 @@ public class ProgramDefaults {
      */
     public static JTable getTable(SpreadSheet s, int enabledColIndex) {
         Object[][] data = s.getObjectRepresentation();
-        for (int i = 0; i < data[0].length; i++) {
-            System.out.println(data[0][i].getClass().toString());
-        }
-        JTable table = new JTable(data, s.getColumnNames()) {
+        TableModel model = new DefaultTableModel(data, s.getColumnNames()) {
+            /** Fetches the column class. */
+            @Override
+            public Class getColumnClass(int column) {
+                Class returnValue;
+                if ((column >= 0) && (column < getColumnCount()))
+                    if (column == enabledColIndex)
+                        returnValue = Number.class;
+                    else
+                        returnValue = data[0][column].getClass();
+                else
+                    returnValue = Object.class;
+                return returnValue;
+            }
+        };
+        JTable table = new JTable(model) {
             /** Only allows for the editing of the count cell. */
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -245,28 +264,25 @@ public class ProgramDefaults {
                     return true;
                 return false;
             }
-
-            /** Fetches the column class. */
-            @Override
-            public Class<?> getColumnClass(int column) {
-                Class returnValue;
-                if ((column >= 0) && (column < getColumnCount()))
-                    returnValue = data[0][column].getClass();
-                else
-                    returnValue = Object.class;
-                return returnValue;
-            }
         };
+        //Left render all items.
+        for (int i = 0; i < table.getColumnCount(); i++) {
+            DefaultTableCellRenderer r = new DefaultTableCellRenderer();
+            r.setHorizontalAlignment(JLabel.LEFT);
+            table.getColumnModel().getColumn(i).setCellRenderer(r);
+        }
         table.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
         //Sorter and table theme.
-        table.setRowSorter(new TableRowSorter<>(table.getModel()));
+        RowSorter<TableModel> sorter = new TableRowSorter<>(model);
+        table.setRowSorter(sorter);
         table.setBackground(ProgramColors.TABLE_CELL_COLOR);
         table.setForeground(ProgramColors.TEXT_ON_FG_COLOR);
         table.setSelectionBackground(ProgramColors.TABLE_ROW_FOCUS_COLOR);
         table.setFont(ProgramFonts.DEFAULT_FONT_LARGE);
         table.setGridColor(ProgramColors.TABLE_BORDER_COLOR);
         table.getTableHeader().setReorderingAllowed(false);
-        table.getColumnModel().getColumn(enabledColIndex).setCellEditor(new TableEditor(getTextField()));
+        if (enabledColIndex >= 0 && enabledColIndex < table.getColumnCount()) //If specified index is in range (valid input)
+            table.getColumnModel().getColumn(enabledColIndex).setCellEditor(new TableEditor(getTextField()));
         //Cell height and program color.
         table.setRowHeight(24);
         //Header theme.
@@ -287,9 +303,19 @@ public class ProgramDefaults {
         return table;
     }
 
-    private static TableRowSorter<TableModel> initRowSorter() {
-        TableRowSorter<TableModel> s = new TableRowSorter<>();
-        return s;
+    /**
+     * Creates and returns a JFileChooser with a given title and selection mode. By default, original location is set
+     * to the directory this program is being ran out of.
+     * @param dialogueTitle the title of the dialogue.
+     * @param selectionMode the selection mode of the dialogue (see JFileChooser properties)
+     * @return a JFileChooser.
+     */
+    public static JFileChooser getFileChooser(String dialogueTitle, int selectionMode) {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle(dialogueTitle);
+        fileChooser.setCurrentDirectory(new File(System.getProperty("user.dir")));
+        fileChooser.setFileSelectionMode(selectionMode);
+        return fileChooser;
     }
 
     /**
@@ -313,11 +339,13 @@ public class ProgramDefaults {
         }
     }
 
-    public static JScrollPane getTableScrollPane(JTable table) {
+    public static JScrollPane getTableScrollPane(JTable table, String title) {
         JScrollPane scrollPane = new JScrollPane(table);
+        if (title != null)
+            scrollPane.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(ProgramColors.TABLE_BORDER_COLOR), title, TitledBorder.LEFT, TitledBorder.BELOW_TOP, ProgramFonts.DEFAULT_FONT_SMALL));
+        else
+            scrollPane.setBorder(BorderFactory.createLineBorder(ProgramColors.TABLE_BORDER_COLOR));
         scrollPane.setBackground(ProgramColors.TABLE_CELL_COLOR);
-        scrollPane.setBorder(BorderFactory.createEmptyBorder());
-        scrollPane.setBorder(BorderFactory.createLineBorder(ProgramColors.TEXT_ON_FG_COLOR));
         scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         int height;
         if (table.getRowCount() > MAX_DISPLAYED_TABLE_ROWS)
@@ -326,6 +354,10 @@ public class ProgramDefaults {
             height = table.getRowCount() * table.getRowHeight();
         table.setPreferredScrollableViewportSize(new Dimension(table.getPreferredSize().width, height));
         return scrollPane;
+    }
+
+    public static JScrollPane getTableScrollPane(JTable table) {
+        return getTableScrollPane(table, null);
     }
 
     /* IMAGE ICON METHODS *****************************************************/

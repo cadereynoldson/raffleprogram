@@ -19,6 +19,9 @@ public class RaffleDataStorage {
     /** The display string of the entries sheet. */
     private static String entriesSheetFileDisplay;
 
+    /** The display string of the items sheet. */
+    private static String itemsSheetFileDisplay;
+
     /** Indicates whether this raffle is using auto detect for selecting items. */
     private static boolean autoDetect = true;
 
@@ -60,7 +63,7 @@ public class RaffleDataStorage {
         if (s == null) {
             originalEntriesSheet = null;
             currentEntriesSheet = null;
-            entriesSheetFileDisplay = null;
+            entriesSheetFileDisplay = ProgramStrings.ENTRIES_INFORMATION_FILE_STATUS_NO_FILE_LOADED;
             resetItemsData();
             throw new IllegalArgumentException();
         } else {
@@ -78,23 +81,28 @@ public class RaffleDataStorage {
         selectedAutoDetectValues.clear();
         chosenFilters.clear();
         itemsSheet = null;
+        itemsSheetFileDisplay = ProgramStrings.ITEMS_MANUAL_FILE_NO_FILE;
     }
 
+    /**
+     * Sets the items sheet from a file path. (Manual item input).
+     * @param f the file to create and set the items spreadsheet with.
+     */
     public static void setItemsSheet(File f) {
         SpreadSheet s = SpreadSheet.readCSV(f.toString());
         if (s == null) {
-            itemsSheet = null;
+            resetItemsData();
             throw new IllegalArgumentException();
         } else {
             itemsSheet = s;
+            itemsSheetFileDisplay = ProgramDefaults.getFileName(f);
         }
     }
 
     /**
      * Sets the items sheet from the data of parsed from a JTable. (Auto-Detect)
-     * @param o
-     * @param colNames
-     * @return
+     * @param o a 2d array of objects to convert into a spreadsheet.
+     * @param colNames the names of each column.
      */
     public static void setItemsSheet(Object[][] o, String[] colNames) {
         SpreadSheet s = new SpreadSheet();
@@ -103,17 +111,31 @@ public class RaffleDataStorage {
             System.out.println(Arrays.toString(o[i]));
             s.addRow(new Row(o[i]));
         }
+        itemsSheetFileDisplay = "Auto Detected Quantities";
         itemsSheet = s;
-        itemsSheet.printSheet();
     }
 
+    /**
+     * Returns a reference to the items sheet.
+     * @return a reference to the items sheet.
+     */
     public static SpreadSheet getItemsSheet() {
         return itemsSheet;
     }
 
+    /**
+     * Returns the string to display for the entries file.
+     * @return the string to display for the entries file.
+     */
     public static String getEntriesFileString() {
         return entriesSheetFileDisplay;
     }
+
+    /**
+     * Returns the string to display for the items file.
+     * @return the string to display for the items file.
+     */
+    public static String getItemsFileString() { return itemsSheetFileDisplay; }
 
     /**
      * Returns true/false depending on the program having a loaded entries file.
@@ -139,6 +161,10 @@ public class RaffleDataStorage {
         return chosenFilters.size() > 0;
     }
 
+    /**
+     * Changes the auto detect value.
+     * @param val the new boolean auto detect value.
+     */
     public static void setAutoDetect(boolean val) {
         autoDetect = val;
         if (!autoDetect)

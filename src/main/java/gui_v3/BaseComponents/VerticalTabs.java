@@ -77,7 +77,6 @@ public class VerticalTabs extends JPanel implements MouseListener {
                 selectedTab = raffleWinners;
                 break;
         }
-        System.out.println("CHANGING TAB TO: " + selectedTab.navKey);
         selectedTab.setSelected(true);
     }
 
