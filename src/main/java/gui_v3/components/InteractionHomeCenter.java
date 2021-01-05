@@ -1,4 +1,4 @@
-package gui_v3.BaseComponents;
+package gui_v3.components;
 
 import gui_v3.logic.*;
 
@@ -36,11 +36,12 @@ public class InteractionHomeCenter extends JPanel {
         checklistPanel.setLayout(new BorderLayout());
         JLabel checkListLabel = ProgramDefaults.getCenterAlignedInteractionLabel(ProgramStrings.HOME_CHECKLIST_TITLE);
         JLabel entriesImage, itemsImage, filterImage;
+        //Entries image.
         if (RaffleDataStorage.hasEntriesFile())
             entriesImage = new JLabel(ProgramDefaults.getCheckIcon());
         else
             entriesImage = new JLabel(ProgramDefaults.getXIcon());
-        if (RaffleDataStorage.hasItemsFile())
+        if (RaffleDataStorage.hasItems())
             itemsImage = new JLabel(ProgramDefaults.getCheckIcon());
         else
             itemsImage = new JLabel(ProgramDefaults.getXIcon());

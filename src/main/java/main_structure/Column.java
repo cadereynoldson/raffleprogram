@@ -21,7 +21,7 @@ public class Column {
      * @param columnName the name of this column. 
      */
     public Column(String columnName) {
-        this.columnName = columnName;
+        this.columnName = columnName.toLowerCase();
         column = new ArrayList<Particle>();
     }
     

@@ -1,4 +1,4 @@
-package gui_v3.BaseComponents;
+package gui_v3.components;
 
 import gui_v3.logic.*;
 
@@ -54,15 +54,15 @@ public class InformationPanel extends DisplayPanel {
 
     @Override
     public void setLoadItems_autoDetect_pt1() {
-        JLabel status;
-        if (RaffleDataStorage.hasEntriesFile())
-            status = ProgramDefaults.getCenterAlignedInteractionLabel(ProgramStrings.getUnderlinedHTMLString(RaffleDataStorage.getEntriesFileString()));
+        if (RaffleDataStorage.hasEntriesFile()) {
+            updateInformation(
+                    ProgramDefaults.getCenterAlignedInteractionLabel(ProgramStrings.ITEMS_AD_INFO_P1_PROMPT),
+                    ProgramDefaults.getCenterAlignedInteractionLabel(ProgramStrings.getUnderlinedHTMLString(RaffleDataStorage.getEntriesFileString()))
+            );
+        }
         else
-            status = ProgramDefaults.getCenterAlignedInteractionLabel(ProgramStrings.getUnderlinedHTMLString(ProgramStrings.ITEMS_AD_INFO_P1_NO_ENTRIES));
-        updateInformation(
-                ProgramDefaults.getCenterAlignedInteractionLabel(ProgramStrings.ITEMS_AD_INFO_P1_PROMPT),
-                status
-        );
+            updateInformation(ProgramDefaults.getCenterAlignedInteractionLabel(ProgramStrings.ITEMS_NO_ENTRIES_BRIEF_DESC_L2));
+
     }
 
     @Override
@@ -80,12 +80,29 @@ public class InformationPanel extends DisplayPanel {
 
     @Override
     public void setLoadItems_manual_pt1() {
-
+        JLabel status;
+        if (RaffleDataStorage.hasItemsFile())
+            status = ProgramDefaults.getCenterAlignedInteractionLabel(ProgramStrings.getUnderlinedHTMLString(ProgramStrings.ITEMS_MANUAL_FILE_LOADED));
+        else
+            status = ProgramDefaults.getCenterAlignedInteractionLabel(ProgramStrings.getUnderlinedHTMLString(ProgramStrings.ITEMS_MANUAL_FILE_NO_FILE));
+        updateInformation(
+                ProgramDefaults.getCenterAlignedInteractionLabel(ProgramStrings.ITEMS_MANUAL_FILE_PROMPT),
+                status
+            );
     }
 
     @Override
     public void setLoadItems_manual_pt2() {
-
+        JLabel status;
+        if (RaffleDataStorage.hasItems()) {
+            status = ProgramDefaults.getCenterAlignedInteractionLabel(ProgramStrings.getUnderlinedHTMLString(ProgramStrings.ITEMS_MANUAL_SAVED));
+        } else {
+            status = ProgramDefaults.getCenterAlignedInteractionLabel(ProgramStrings.getUnderlinedHTMLString(ProgramStrings.ITEMS_MANUAL_NOT_SAVED));
+        }
+        updateInformation(
+                ProgramDefaults.getCenterAlignedInteractionLabel(ProgramStrings.ITEMS_MANUAL_INFO_PROMPT),
+                status
+        );
     }
 
     @Override

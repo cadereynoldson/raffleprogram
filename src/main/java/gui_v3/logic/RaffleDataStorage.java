@@ -31,17 +31,24 @@ public class RaffleDataStorage {
     /** Selected filters for the data! */
     private static ArrayList<String> chosenFilters = new ArrayList<>();
 
-    /** Selected values used in creating an auto detect count sheet. */
-    private static ArrayList<String> selectedAutoDetectValues = new ArrayList<>();
+    /**
+     * Selected values used in creating an auto detect count sheet
+     * --OR--
+     * used in the instance of manual item loading for the distribute by values.
+     */
+    private static ArrayList<String> selectedDistributionValues = new ArrayList<>();
 
     /** The most recently manipulated spreadsheet. */
     private static SpreadSheet currentEntriesSheet;
 
+    /** The originally loaded entries sheet. */
+    private static SpreadSheet originalEntriesSheet;
+
     /** The spreadsheet containing the items to raffle. */
     private static SpreadSheet itemsSheet;
 
-    /** The originally loaded entries sheet. */
-    private static SpreadSheet originalEntriesSheet;
+    /** The index of count column of the items spreadsheet. Default is one.*/
+    private static int countColumn = -1;
 
     /** Indicates if multiple entries are to be kicked */ //TODO: IMPLEMENT!
     private static boolean kickMultipleEntries;
@@ -78,10 +85,11 @@ public class RaffleDataStorage {
      * Resets all entries dependent values stored in this class to their original state.
      */
     public static void resetItemsData() {
-        selectedAutoDetectValues.clear();
+        selectedDistributionValues.clear();
         chosenFilters.clear();
         itemsSheet = null;
         itemsSheetFileDisplay = ProgramStrings.ITEMS_MANUAL_FILE_NO_FILE;
+        countColumn = -1;
     }
 
     /**
@@ -167,8 +175,7 @@ public class RaffleDataStorage {
      */
     public static void setAutoDetect(boolean val) {
         autoDetect = val;
-        if (!autoDetect)
-            selectedAutoDetectValues.clear();
+        selectedDistributionValues.clear();
     }
 
     /**
@@ -195,16 +202,29 @@ public class RaffleDataStorage {
         return uniqueValues;
     }
 
-    public static void addAutoDetectFilter(String filter) {
-        selectedAutoDetectValues.add(filter.trim());
+    /**
+     * Returns true or false based on if the storage has items to raffle.
+     * This is indicated ALWAYS by the count column not being equal to -1 AND having distribution values!
+     * - This is because the CURRENT version of the GUI requires a count column and selected distribution values for the raffle algorithm to run.
+     * @return true or false if the items file has all necessary item values for the raffle.
+     */
+    public static boolean hasItems() {
+        return countColumn != -1 && hasDistributionValues() && itemsSheet != null;
     }
 
-    public static void removeAutoDetectFilter(String filter) {
-        selectedAutoDetectValues.remove(filter.trim());
+    /**
+     * Returns true or false based on having proper storage of the selected distribution values.
+     * @return true/false based on having distribution values.
+     */
+    public static boolean hasDistributionValues() {
+        return selectedDistributionValues.size() > 0;
     }
 
-    public static ArrayList<String> getSelectedAutoDetectValues() {
-        return selectedAutoDetectValues;
+    /**
+     * Clears the selected distribution values.
+     */
+    public static void clearDistributionValues() {
+        selectedDistributionValues.clear();
     }
 
     /**
@@ -213,11 +233,11 @@ public class RaffleDataStorage {
      */
     public static SpreadSheet createItemCountSheet() {
         SpreadSheet s = new SpreadSheet();
-        if (selectedAutoDetectValues.size() == 1)
-            return createItemCountSheet(selectedAutoDetectValues.get(0));
-        if (selectedAutoDetectValues.size() == 2) { //If there are only two columns to map together
-            Column c1 = originalEntriesSheet.getColumn(originalEntriesSheet.getColumnIndex(selectedAutoDetectValues.get(0)));
-            Column c2 = originalEntriesSheet.getColumn(originalEntriesSheet.getColumnIndex(selectedAutoDetectValues.get(1)));
+        if (selectedDistributionValues.size() == 1)
+            return createItemCountSheet(selectedDistributionValues.get(0));
+        if (selectedDistributionValues.size() == 2) { //If there are only two columns to map together
+            Column c1 = originalEntriesSheet.getColumn(originalEntriesSheet.getColumnIndex(selectedDistributionValues.get(0)));
+            Column c2 = originalEntriesSheet.getColumn(originalEntriesSheet.getColumnIndex(selectedDistributionValues.get(1)));
             TreeMap<Object, TreeSet<Object>> values = new TreeMap<Object, TreeSet<Object>>();
             for (int i = 0; i < c1.getLength(); i++) {
                 Object v1 = c1.get(i).getValue();
@@ -230,7 +250,7 @@ public class RaffleDataStorage {
                     values.put(v1, v1_values);
                 }
             }
-            String[] names = {selectedAutoDetectValues.get(0), selectedAutoDetectValues.get(1), ProgramStrings.QUANTITY_COLUMN_NAME};
+            String[] names = {selectedDistributionValues.get(0), selectedDistributionValues.get(1), ProgramStrings.QUANTITY_COLUMN_NAME};
             s.initColumns(names);
             for (Object rowValue : values.keySet()) {
                 for (Object subValue : values.get(rowValue)) {
@@ -265,4 +285,41 @@ public class RaffleDataStorage {
         return s;
     }
 
+    public static void setCountColumn(String columnName) throws IllegalArgumentException {
+        int col =  itemsSheet.getColumnIndex(columnName);
+        for (int i = 0; i < itemsSheet.getNumRows(); i++) {
+            if (!(itemsSheet.getParticle(i, col).getValue() instanceof Number)) {
+                clearDistributionValues();
+                countColumn = -1;
+                throw new IllegalArgumentException(ProgramStrings.DIALOGUE_ITEMS_MANUAL_COUNT_COL_ERR);
+            }
+        }
+        countColumn = col;
+    }
+
+    public static void setSelectedDistributionValues(Collection<String> columnNames) throws IllegalArgumentException {
+        selectedDistributionValues.clear();
+        for (String columnName : columnNames) {
+            if (!autoDetect) { //If auto detect is off - ASSURE VALUES ARE COMPATIBLE!!
+                int entriesIndex = originalEntriesSheet.getColumnIndex(columnName);
+                if (entriesIndex == -1) {//Make sure the original entries sheet has a column with the same name. This is easiest.
+                    selectedDistributionValues.clear();
+                    throw new IllegalArgumentException(ProgramStrings.DIALOGUE_ITEMS_MANUAL_NO_ENTRIES_COL_ERR + columnName);
+                }
+                TreeSet<Object> entriesColValues = originalEntriesSheet.getColumn(entriesIndex).getUniqueValues();
+                Column itemsCol = itemsSheet.getColumn(columnName);
+                for (int i = 0; i < itemsCol.getLength(); i++) {
+                    try {
+                        if (!entriesColValues.contains(itemsCol.get(i).getValue())) {
+                            selectedDistributionValues.clear();
+                            throw new IllegalArgumentException("The column (" + columnName + ") in the entries dataset\ndoesn't contain the value: " + itemsCol.get(i).getValue());
+                        }
+                    } catch (Exception e) {
+                        throw new IllegalArgumentException("The column (" + columnName + ") in the entries dataset\ndoesn't contain the value: " + itemsCol.get(i).getValue());
+                    }
+                }
+            }
+            selectedDistributionValues.add(columnName);
+        }
+    }
 }

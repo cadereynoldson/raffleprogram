@@ -5,14 +5,15 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Random;
-import java.util.TreeMap;
-import java.util.TreeSet;
+import java.util.*;
 
 /**
- * Representation of a spreadsheet in a manipulatable ArrayList based object. 
+ * Representation of a spreadsheet in a manipulable ArrayList based object.
+ * - RULES:
+ * - 1. All storing of strings will be lowercase.
+ * Process of building a spreadsheet follows:
+ * - 1. Initialize columns
+ * - 2. Build dataset row by row!
  * @author Cade Reynoldson
  * @version 1.0
  */
@@ -40,10 +41,12 @@ public class SpreadSheet {
         return rows.get(row);
     }
     
-    public Column getColumn(int column) {
-        return columns.get(column);
+    public Column getColumn(int columnIndex) {
+        return columns.get(columnIndex);
     }
-    
+
+    public Column getColumn(String columnName) { return columns.get(getColumnIndex(columnName)); }
+
     /**
      * Eliminates duplicates of a given column name.
      * @return duplicates of a given column eliminated.
@@ -174,7 +177,7 @@ public class SpreadSheet {
      */
     public int getIndex(String colName) {
         for (int i = 0; i < columns.size(); i++)
-            if (columns.get(i).getName().toLowerCase().equals(colName.toLowerCase()))
+            if (columns.get(i).getName().equalsIgnoreCase(colName))
                 return i;
         return -1;
     }
@@ -184,6 +187,9 @@ public class SpreadSheet {
      * @param names
      */
     public void initColumns(String[] names) {
+        HashSet<String> s = new HashSet<>(Arrays.asList(names));
+        if (s.size() != names.length)
+            throw new IllegalArgumentException("Names of each column must be unique.");
         for (int i = 0; i < names.length; i++) {
             columns.add(new Column(names[i]));
         }

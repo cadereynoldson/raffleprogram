@@ -2,7 +2,7 @@ package main_structure;
 
 public class Particle {
    
-    /** The value stored in this class. Can take the form of a string or a float. */
+    /** The value stored in this class. Can take the form of a string, double or integer. */
     private Object value;
     
     /**
@@ -11,15 +11,7 @@ public class Particle {
      * @param value the value to store. 
      */
     public Particle(String value) {
-        try {
-            this.value = Integer.parseInt(value);
-        } catch (Exception e){
-            try {
-                this.value = Float.parseFloat(value);
-            } catch (Exception e2) {
-                this.value = value;
-            }
-        }
+        setValue(value);
     }
     
     /**
@@ -31,9 +23,12 @@ public class Particle {
             this.value = Integer.parseInt(value);
         } catch (Exception e){
             try {
-                this.value = Float.parseFloat(value);
+                this.value = Double.parseDouble(value);
+                double temp = (Double) this.value - Math.floor((Double) this.value); //Cut decimals out to see if it's just a ".0" after the successful parse.
+                if (temp == 0) //If after cutting the decimals and the remainder is zero, just make this an integer.
+                    this.value = ((Double) this.value).intValue();
             } catch (Exception e2) {
-                this.value = value;
+                this.value = value.toLowerCase();
             }
         }
     }

@@ -1,10 +1,9 @@
-package gui_v3.BaseComponents;
+package gui_v3.components;
 
 import gui_v3.logic.*;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
 
 public class DescriptionPanel extends DisplayPanel {
 
@@ -73,12 +72,22 @@ public class DescriptionPanel extends DisplayPanel {
 
     @Override
     public void setLoadItems_autoDetect_pt1() {
-        refreshDisplay(
-                ProgramStrings.ITEMS_AD_DESCRIPTION_P1_TITLE,
-                ProgramDefaults.getDescriptionLabel(ProgramStrings.ITEMS_AD_DESCRIPTION_P1_L1),
-                ProgramDefaults.getDescriptionLabel(ProgramStrings.ITEMS_AD_DESCRIPTION_P1_L2),
-                ProgramDefaults.getDescriptionLabel(ProgramStrings.ITEMS_AD_DESCRIPTION_P1_L3)
-        );
+        if (RaffleDataStorage.hasEntriesFile()) {
+            refreshDisplay(
+                    ProgramStrings.ITEMS_AD_DESCRIPTION_P1_TITLE,
+                    ProgramDefaults.getDescriptionLabel(ProgramStrings.ITEMS_AD_DESCRIPTION_P1_L1),
+                    ProgramDefaults.getDescriptionLabel(ProgramStrings.ITEMS_AD_DESCRIPTION_P1_L2),
+                    ProgramDefaults.getDescriptionLabel(ProgramStrings.ITEMS_AD_DESCRIPTION_P1_L3),
+                    ProgramDefaults.getDescriptionLabel(ProgramStrings.ITEMS_AD_DESCRIPTION_P1_L4)
+            );
+        } else {
+            refreshDisplay(
+                    ProgramStrings.ITEMS_NO_ENTRIES_DESCRIPTION_TITLE,
+                    ProgramDefaults.getDescriptionLabel(ProgramStrings.ITEMS_NO_ENTRIES_DESCRIPTION_L1),
+                    ProgramDefaults.getDescriptionLabel(ProgramStrings.ITEMS_NO_ENTRIES_DESCRIPTION_L2),
+                    ProgramDefaults.getDescriptionLabel(ProgramStrings.ITEMS_NO_ENTRIES_DESCRIPTION_L3)
+            );
+        }
     }
 
     @Override
@@ -93,12 +102,21 @@ public class DescriptionPanel extends DisplayPanel {
 
     @Override
     public void setLoadItems_manual_pt1() {
-
+        refreshDisplay(
+                ProgramStrings.ITEMS_MANUAL_DESCRIPTION_P1_TITLE,
+                ProgramDefaults.getDescriptionLabel(ProgramStrings.ITEMS_MANUAL_DESCRIPTION_P1_L1),
+                ProgramDefaults.getDescriptionLabel(ProgramStrings.ITEMS_MANUAL_DESCRIPTION_P1_L2),
+                ProgramDefaults.getDescriptionLabel(ProgramStrings.ITEMS_MANUAL_DESCRIPTION_P1_L3)
+        );
     }
 
     @Override
     public void setLoadItems_manual_pt2() {
-
+        refreshDisplay(
+                ProgramStrings.ITEMS_MANUAL_DESCRIPTION_P2_TITLE,
+                ProgramDefaults.getDescriptionLabel(ProgramStrings.ITEMS_MANUAL_DESCRIPTION_P2_L1),
+                ProgramDefaults.getDescriptionLabel(ProgramStrings.ITEMS_MANUAL_DESCRIPTION_P2_L2)
+        );
     }
 
     @Override

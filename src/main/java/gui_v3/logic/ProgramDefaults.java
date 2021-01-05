@@ -130,7 +130,6 @@ public class ProgramDefaults {
                 try {
                     Desktop.getDesktop().browse(new URI(link));
                 } catch (IOException | URISyntaxException e1) {
-                    // TODO Auto-generated catch block
                     e1.printStackTrace();
                 }
             }

@@ -40,6 +40,10 @@ public class ProgramDimensions {
 
     public static final GridBagConstraints ITEMS_MP2_CONFIRM_CONSTRAINTS = getManualConfirmConstraints();
 
+    public static final GridBagConstraints FILTER_BRIEF_DESC_CONSTRAINTS = getFilterBriefDescConstraints();
+
+    public static final Insets DEFAULT_INSETS = new Insets(0, 50, 20, 50);
+
     private static GridBagConstraints getGridBagConstraints(int gridx, int gridy, int gridwidth, int gridheight,
             Insets insets, double weightx, double weighty, int anchor, int fill) {
         GridBagConstraints c = new GridBagConstraints();
@@ -53,6 +57,11 @@ public class ProgramDimensions {
         c.anchor = anchor;
         c.fill = fill;
         return c;
+    }
+
+    private static GridBagConstraints getFilterBriefDescConstraints() {
+        return getGridBagConstraints(1, 1, 3, 1, DEFAULT_INSETS,
+                1, 0.3, GridBagConstraints.FIRST_LINE_START, GridBagConstraints.BOTH);
     }
 
     private static GridBagConstraints getManualTableConstraints() {

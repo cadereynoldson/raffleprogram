@@ -1,4 +1,4 @@
-package gui_v3.BaseComponents;
+package gui_v3.components;
 
 import gui_v3.logic.*;
 import main_structure.SpreadSheet;
@@ -8,6 +8,8 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 
 /**
  * Serves as the center panel for auto detecting items to raffle.
@@ -29,7 +31,11 @@ public class InteractionItemsCenter extends JPanel {
     /** JLabel for displaying the name of the loaded file. */
     private JLabel loadedFileText;
 
+    /** Combo box for selecting the item sizes of the program. */
     private JComboBox columnComboBox;
+
+    /** The selected distribution values for manual or auto detection. */
+    private HashSet<String> selectedDistributionValues;
 
     /**
      * Creates a new instance of the interaction items center panel.
@@ -40,6 +46,7 @@ public class InteractionItemsCenter extends JPanel {
         super();
         this.pcs = pcs;
         locationDisplayed = location;
+        selectedDistributionValues = new HashSet<>();
         initAutoDetectToggle();
         initTheme();
         setLocationDisplayed();
@@ -83,17 +90,29 @@ public class InteractionItemsCenter extends JPanel {
      * Sets the location displayed of this panel. Location is ONLY changed via interacting with this panel! (No parameters)
      */
     private void setLocationDisplayed() {
-        if (locationDisplayed == NavigationLocations.ITEMS_AUTO_DETECT_PT1) {
-            setAutoDetect_P1();
-        } else if (locationDisplayed == NavigationLocations.ITEMS_AUTO_DETECT_PT2) {
-            setAutoDetect_P2();
-        } else if (locationDisplayed == NavigationLocations.ITEMS_MANUAL_PT1) {
-            setManual_P1();
-        } else if (locationDisplayed == NavigationLocations.ITEMS_MANUAL_PT2) {
-            setManual_P2();
-        } else if (locationDisplayed == NavigationLocations.ITEMS_MANUAL_PT3) {
-            setManual_P3();
+        if (RaffleDataStorage.hasEntriesFile()) { //Assure that there is an entries file.
+            if (locationDisplayed == NavigationLocations.ITEMS_AUTO_DETECT_PT1) {
+                setAutoDetect_P1();
+            } else if (locationDisplayed == NavigationLocations.ITEMS_AUTO_DETECT_PT2) {
+                setAutoDetect_P2();
+            } else if (locationDisplayed == NavigationLocations.ITEMS_MANUAL_PT1) {
+                setManual_P1();
+            } else if (locationDisplayed == NavigationLocations.ITEMS_MANUAL_PT2) {
+                setManual_P2();
+            } else if (locationDisplayed == NavigationLocations.ITEMS_MANUAL_PT3) {
+                setManual_P3();
+            }
+        } else { //Display message that you cannot do this step without an entries file loaded.
+            setNoEntriesFile();
         }
+    }
+
+    private void setNoEntriesFile() {
+        removeAll();
+        setLayout(new GridLayout(0, 1));
+        add(ProgramDefaults.getCenterAlignedInteractionLabel(ProgramStrings.ITEMS_NO_ENTRIES_BRIEF_DESC_L1));
+        add(ProgramDefaults.getCenterAlignedInteractionLabel(ProgramStrings.ITEMS_NO_ENTRIES_BRIEF_DESC_L2));
+        add(ProgramDefaults.getCenterAlignedInteractionLabel(ProgramStrings.ITEMS_NO_ENTRIES_BRIEF_DESC_L3));
     }
 
     /**
@@ -113,22 +132,18 @@ public class InteractionItemsCenter extends JPanel {
     private void setAutoDetect_P1() {
         removeAll();
         setLayout(new GridLayout(0, 1));
-        RaffleDataStorage.getSelectedAutoDetectValues().clear(); //Clear selected values.
+        RaffleDataStorage.clearDistributionValues(); //Clear selected values.
         add(ProgramDefaults.getCenterAlignedInteractionLabel(ProgramStrings.ITEMS_AD_BRIEF_DESCRIPTION_P1));
-        if (!RaffleDataStorage.hasEntriesFile()) {
+        ((Runnable)  ()-> { //Can take a second to compute. Run on separate thread.
             add(autoDetectToggle);
-            add(ProgramDefaults.getCenterAlignedInteractionLabel(ProgramStrings.ITEMS_AD_NO_ENTRIES_FILE));
-        } else {
-            ((Runnable)  ()-> { //Can take a second to compute. Run on separate thread.
-                add(autoDetectToggle);
-                add(getAutoDetectChecklistPanel());
-                JButton contButton = ProgramDefaults.getButton(ProgramStrings.ITEMS_AD_CONTINUE_BUTTON);
-                contButton.addActionListener(event -> { //Fire property change to navigate to items change part 2.
-                    pcs.firePropertyChange(PropertyChangeKeys.ITEMS_NAV_CHANGE, null, NavigationLocations.ITEMS_AUTO_DETECT_PT2);
-                });
-                add(ProgramDefaults.createSpacedPanel(contButton, 100, 20));
-            }).run();
-        }
+            add(getAutoDetectChecklistPanel());
+            JButton contButton = ProgramDefaults.getButton(ProgramStrings.ITEMS_AD_CONTINUE_BUTTON);
+            contButton.addActionListener(event -> { //Fire property change to navigate to items change part 2.
+                RaffleDataStorage.setSelectedDistributionValues(selectedDistributionValues);
+                pcs.firePropertyChange(PropertyChangeKeys.ITEMS_NAV_CHANGE, null, NavigationLocations.ITEMS_AUTO_DETECT_PT2);
+            });
+            add(ProgramDefaults.createSpacedPanel(contButton, 100, 20));
+        }).run();
     }
 
     /**
@@ -155,9 +170,7 @@ public class InteractionItemsCenter extends JPanel {
                 subPanel.setLayout(new GridLayout(1, 0));
             }
             JCheckBox autoDetectOption = ProgramDefaults.getCheckBox(detectedValues.get(i));
-            autoDetectOption.addActionListener(this::autoDetectOptionSelected);
-            if (RaffleDataStorage.getSelectedAutoDetectValues().contains(autoDetectOption.getText()))
-                autoDetectOption.setSelected(true);
+            autoDetectOption.addActionListener(this::distributionValueSelected);
             subPanel.add(autoDetectOption);
         }
         //Last panel has been generated. Add to checklist panel. Check for size being larger than one. Don't want to add blank panel.
@@ -165,9 +178,7 @@ public class InteractionItemsCenter extends JPanel {
             checklistPanel.add(subPanel);
         if (num2x2 != detectedValues.size()) { //If the 2x2 panel size is odd, add the last value in the list to checkbox panel.
             JCheckBox autoDetectOption = ProgramDefaults.getCheckBox(detectedValues.get(detectedValues.size() - 1));
-            if (RaffleDataStorage.getSelectedAutoDetectValues().contains(autoDetectOption.getText()))
-                autoDetectOption.setSelected(true);
-            autoDetectOption.addActionListener(this::autoDetectOptionSelected);
+            autoDetectOption.addActionListener(this::distributionValueSelected);
             checklistPanel.add(autoDetectOption);
         }
         return checklistPanel;
@@ -177,19 +188,19 @@ public class InteractionItemsCenter extends JPanel {
      * Handles an auto detect identifier being selected.
      * @param event the action event supplied by the checkbox.
      */
-    private void autoDetectOptionSelected(ActionEvent event) {
+    private void distributionValueSelected(ActionEvent event) {
         if (event.getSource() instanceof  JCheckBox) {
             if (((JCheckBox) event.getSource()).isSelected()) {
-                RaffleDataStorage.addAutoDetectFilter(((JCheckBox) event.getSource()).getText());
+                selectedDistributionValues.add(((JCheckBox) event.getSource()).getText().trim());
             } else {
-                RaffleDataStorage.removeAutoDetectFilter(((JCheckBox) event.getSource()).getText());
+                selectedDistributionValues.remove(((JCheckBox) event.getSource()).getText().trim());
             }
         }
     }
 
 
     public void setAutoDetect_P2() {
-        if (RaffleDataStorage.getSelectedAutoDetectValues().isEmpty()) {
+        if (!RaffleDataStorage.hasDistributionValues()) {
             //TODO: Do error handling for setting this page. Jeez you really fucked up if this is where you got to.
         } else { //If there are selected auto detect values
             ((Runnable) () -> { //Compute calculation on separate thread.
@@ -255,6 +266,7 @@ public class InteractionItemsCenter extends JPanel {
             for (int i = 0; i < colNames.length; i++)
                 colNames[i] = autoDetectTable.getColumnName(i);
             RaffleDataStorage.setItemsSheet(data, colNames);
+            RaffleDataStorage.setCountColumn(RaffleDataStorage.getItemsSheet().getColumnNames()[autoDetectTable.getColumnCount() - 1]);
             displayQuantitiesConfirmed();
         }).run();
     }
@@ -326,6 +338,7 @@ public class InteractionItemsCenter extends JPanel {
             removeAll();
             setLayout(new GridBagLayout());
             String[] columnNames = RaffleDataStorage.getItemsSheet().getColumnNames();
+            RaffleDataStorage.clearDistributionValues();
             //Build Checklist of items
             JPanel checklistPanel = ProgramDefaults.getBlankPanel();
             checklistPanel.setLayout(new GridLayout(0, 1));
@@ -333,7 +346,7 @@ public class InteractionItemsCenter extends JPanel {
             for (int i = 0; i < columnNames.length; i++) {
                 JCheckBox b = ProgramDefaults.getCheckBox(columnNames[i]);
                 b.setHorizontalAlignment(SwingConstants.LEADING);
-                b.addActionListener(this::manualWinnerCheckboxSelected);
+                b.addActionListener(this::distributionValueSelected);
                 checklistPanel.add(b);
             }
             //Build ComboBox of column names
@@ -346,6 +359,9 @@ public class InteractionItemsCenter extends JPanel {
             JTable displayTable = ProgramDefaults.getTable(RaffleDataStorage.getItemsSheet());
             JButton back = ProgramDefaults.getButton(ProgramStrings.ITEMS_MANUAL_BACK);
             JButton confirm = ProgramDefaults.getButton(ProgramStrings.ITEMS_MANUAL_CONFIRM);
+            //Button action listeners
+            back.addActionListener(event -> pcs.firePropertyChange(PropertyChangeKeys.ITEMS_NAV_CHANGE, null, NavigationLocations.ITEMS_MANUAL_PT1));
+            confirm.addActionListener(this::confirmManual);
             //Add everything
             add(ProgramDefaults.getCenterAlignedInteractionLabel(ProgramStrings.ITEMS_MANUAL_P2_BRIEF_DESCRIPTION), ProgramDimensions.ITEMS_MP2_BRIEF_DESC_CONSTRAINTS);
             add(checklistPanel, ProgramDimensions.ITEMS_MP2_CHECKBOX_CONSTRAINTS);
@@ -356,7 +372,24 @@ public class InteractionItemsCenter extends JPanel {
         }
     }
 
-    private void manualWinnerCheckboxSelected(ActionEvent actionEvent) {
+    private void confirmManual(ActionEvent actionEvent) {
+        if (selectedDistributionValues.isEmpty())
+            ProgramDefaults.displayError(ProgramStrings.DIALOGUE_ITEMS_MANUAL_NO_DISTRIBUTION_VALUES, ProgramStrings.DIALOGUE_LOAD_ERROR_TITLE, this);
+        else {
+            String comboBoxStr = String.valueOf(columnComboBox.getSelectedItem());
+            String statusString;
+            boolean status;
+            try {
+                RaffleDataStorage.setCountColumn(comboBoxStr);
+                RaffleDataStorage.setSelectedDistributionValues(selectedDistributionValues);
+                statusString = ProgramStrings.DIALOGUE_ITEMS_MANUAL_SUCCESS;
+                status = true;
+            } catch (IllegalArgumentException e) {
+                statusString = e.getMessage();
+                status = false;
+            }
+            pcs.firePropertyChange(PropertyChangeKeys.ITEMS_INFO_SET, status, statusString);
+        }
     }
 
     private void setManual_P3() {

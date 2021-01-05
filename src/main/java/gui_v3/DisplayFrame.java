@@ -1,13 +1,12 @@
 package gui_v3;
 
-import gui_v3.BaseComponents.*;
+import gui_v3.components.*;
 import gui_v3.logic.*;
 
 import javax.swing.*;
 import javax.swing.plaf.BorderUIResource;
 import java.awt.*;
 import java.beans.PropertyChangeEvent;
-import java.io.File;
 
 /**
  * Display Frame. Acts as the main JFrame for displaying the application.
@@ -31,6 +30,9 @@ public class DisplayFrame extends JFrame {
 
     /** The last ITEM location displayed. */
     private NavigationLocations lastItemLocation;
+
+    /** The count column of the items spreadsheet. */
+    private int countColumn;
 
     public DisplayFrame() {
         super();
@@ -81,6 +83,8 @@ public class DisplayFrame extends JFrame {
             resetItems();
         } else if (propertyChangeEvent.getPropertyName().equals(PropertyChangeKeys.LOAD_ITEMS)) {
             loadItems();
+        } else if (propertyChangeEvent.getPropertyName().equals(PropertyChangeKeys.ITEMS_INFO_SET)) {
+            validateManualInput((Boolean) propertyChangeEvent.getOldValue(), (String) propertyChangeEvent.getNewValue());
         }
         revalidate();
         repaint();
@@ -96,8 +100,9 @@ public class DisplayFrame extends JFrame {
 
     private void handleItemsADNavigation(NavigationLocations navLoc) {
         if (navLoc == NavigationLocations.ITEMS_AUTO_DETECT_PT2
-                && RaffleDataStorage.getSelectedAutoDetectValues().isEmpty()) { //Display error that you cannot continue without checking a box.
+                && !RaffleDataStorage.hasDistributionValues()) { //Display error that you cannot continue without checking a box.
             ProgramDefaults.displayError(ProgramStrings.DIALOGUE_ITEMS_AD_CONTINUE_ERROR, ProgramStrings.DIALOGUE_LOAD_ERROR_TITLE, this);
+            return;
         } else if (navLoc == NavigationLocations.ITEMS_AUTO_DETECT_PT1) { //If navigating to this location, ALL PREVIOUS AUTO DETECTION IS WIPED! //TODO: Potentially update???
             RaffleDataStorage.resetItemsData();
         }
@@ -216,6 +221,14 @@ public class DisplayFrame extends JFrame {
                 ((InteractionItemsCenter) interactionPanel.getCenterPanel()).setLoadedFileText(RaffleDataStorage.getItemsFileString());
                 informationPanel.setLoadItems_manual_pt1();
             }
+        }
+    }
+
+    private void validateManualInput(boolean success, String message) {
+        if (success) { //Display success message.
+            ProgramDefaults.displayMessage(message, ProgramStrings.DIALOGUE_SUCCESS_TITLE, this);
+        } else { //Display error message.
+            ProgramDefaults.displayError(message, ProgramStrings.DIALOGUE_ERROR_TITLE, this);
         }
     }
 

@@ -1,4 +1,4 @@
-package gui_v3.BaseComponents;
+package gui_v3.components;
 
 import gui_v3.logic.*;
 
