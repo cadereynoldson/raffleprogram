@@ -1,20 +1,23 @@
 package gui_v3.logic;
 
-import main_structure.Row;
 import main_structure.SpreadSheet;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
-import javax.swing.plaf.basic.BasicScrollBarUI;
 import javax.swing.table.*;
 import javax.swing.text.JTextComponent;
 import java.awt.*;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.font.TextAttribute;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 public class ProgramDefaults {
@@ -76,8 +79,13 @@ public class ProgramDefaults {
         return getForegroundLabel(text, SwingConstants.TRAILING, SwingConstants.CENTER, ProgramFonts.DEFAULT_FONT_LARGE);
     }
 
-    public static JLabel getFileDisplayLabel(String text) {
-        return getForegroundLabel(ProgramStrings.strToHTML("<u>" + text + "</u>"), SwingConstants.LEADING, SwingConstants.CENTER, ProgramFonts.DEFAULT_FONT_LARGE_ITALICS);
+    public static JLabel getUnderlineLabelLarge(String text) {
+        JLabel l = getForegroundLabel(text, SwingConstants.LEADING, SwingConstants.CENTER, ProgramFonts.DEFAULT_FONT_LARGE_ITALICS);
+        Font f = l.getFont();
+        Map attributes = f.getAttributes();
+        attributes.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON);
+        l.setFont(f.deriveFont(attributes));
+        return l;
     }
 
     /**
@@ -86,7 +94,7 @@ public class ProgramDefaults {
      * @return a label to be displayed on the tab list.
      */
     public static JLabel getCenteredTabLabel(String title) {
-        JLabel label = getForegroundLabel(title, SwingConstants.CENTER, SwingConstants.CENTER, ProgramFonts.DEFAULT_FONT_SMALL);
+        JLabel label = getForegroundLabel(title, SwingConstants.CENTER, SwingConstants.CENTER, ProgramFonts.DEFAULT_TAB_FONT);
         label.setForeground(ProgramColors.TEXT_ON_BG_COLOR);
         label.setBackground(ProgramColors.TAB_COLOR);
         return label;
@@ -109,6 +117,12 @@ public class ProgramDefaults {
      */
     public static JPanel getBlankPanel() {
         JPanel panel = new JPanel();
+        panel.setBackground(ProgramColors.FOREGROUND_COLOR);
+        return panel;
+    }
+
+    public static JPanel getBlankPanel(LayoutManager l) {
+        JPanel panel = new JPanel(l);
         panel.setBackground(ProgramColors.FOREGROUND_COLOR);
         return panel;
     }
@@ -201,7 +215,7 @@ public class ProgramDefaults {
      * @return a checkbox themed to this program with a given name.
      */
     public static JCheckBox getCheckBox(String checkBoxName) {
-        JCheckBox b = new JCheckBox("   " + checkBoxName);
+        JCheckBox b = new JCheckBox(ProgramStrings.strToCheckboxStr(checkBoxName));
         b.setFont(ProgramFonts.DEFAULT_FONT_LARGE);
         b.setHorizontalAlignment(SwingConstants.CENTER);
         b.setBackground(ProgramColors.FOREGROUND_COLOR);
@@ -455,33 +469,6 @@ public class ProgramDefaults {
             }
             if (m[i] instanceof Container) //Recursively color all components in a dialog.
                 colorDialog((Container) m[i]);
-        }
-    }
-
-    private static final class JGradientButton extends JButton{
-        private JGradientButton(String text){
-            super(text);
-            setContentAreaFilled(false);
-        }
-
-        @Override
-        protected void paintComponent(Graphics g){
-            Graphics2D g2 = (Graphics2D)g.create();
-            g2.setPaint(new GradientPaint(
-                    new Point(0, 0),
-                    getBackground(),
-                    new Point(0, getHeight()/3),
-                    ProgramColors.FOCUS_COLOR_HIGHLIGHT));
-            g2.fillRect(0, 0, getWidth(), getHeight()/3);
-            g2.setPaint(new GradientPaint(
-                    new Point(0, getHeight()/3),
-                    ProgramColors.FOCUS_COLOR_HIGHLIGHT,
-                    new Point(0, getHeight()),
-                    getBackground()));
-            g2.fillRect(0, getHeight()/3, getWidth(), getHeight());
-            g2.dispose();
-
-            super.paintComponent(g);
         }
     }
 }

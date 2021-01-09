@@ -10,4 +10,5 @@ public class PropertyChangeKeys {
     public static final String ITEMS_NAV_CHANGE = "ITEMS_NAV_CHANGE";
     public static final String ITEMS_AD_QUANTITIES_CONFIRMED = "ITEMS_QC";
     public static final String ITEMS_INFO_SET = "ITEMS_INFO_SET";
+    public static final String FILTER_ACTION = "FILTER_ACTION";
 }

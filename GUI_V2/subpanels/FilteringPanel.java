@@ -95,19 +95,16 @@ public class FilteringPanel extends JPanel implements FadeCapable, FadingCompone
         setLayout(new BorderLayout());
         add(title, BorderLayout.NORTH);
         fadingComponents.add(title);
-        updateTimer = new Timer(2, new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (currentRemoved < removed) {
-                    removed--;
-                } else if (currentRemoved > removed) {
-                    removed++;
-                } else {
-                    updateTimer.stop();
-                }
-                currentCountLabel.setText(Integer.toString(originalCount - removed));
-                numberFilteredLabel.setText(Integer.toString(removed));
+        updateTimer = new Timer(2, e -> {
+            if (currentRemoved < removed) {
+                removed--;
+            } else if (currentRemoved > removed) {
+                removed++;
+            } else {
+                updateTimer.stop();
             }
+            currentCountLabel.setText(Integer.toString(originalCount - removed));
+            numberFilteredLabel.setText(Integer.toString(removed));
         });
         init();
     }

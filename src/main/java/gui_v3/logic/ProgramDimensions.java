@@ -7,6 +7,8 @@ import java.awt.*;
  */
 public class ProgramDimensions {
 
+    public static final Insets DEFAULT_INSETS = new Insets(0, 50, 20, 50);
+
     /** The dimension of the user's screen size */
     public static final Dimension USER_SCREEN_SIZE = Toolkit.getDefaultToolkit().getScreenSize();
 
@@ -42,7 +44,7 @@ public class ProgramDimensions {
 
     public static final GridBagConstraints FILTER_BRIEF_DESC_CONSTRAINTS = getFilterBriefDescConstraints();
 
-    public static final Insets DEFAULT_INSETS = new Insets(0, 50, 20, 50);
+    public static final GridBagConstraints FILTER_CHECKBOX_CONSTRAINTS = getFilterCheckboxConstraints();
 
     private static GridBagConstraints getGridBagConstraints(int gridx, int gridy, int gridwidth, int gridheight,
             Insets insets, double weightx, double weighty, int anchor, int fill) {
@@ -59,9 +61,15 @@ public class ProgramDimensions {
         return c;
     }
 
+    private static GridBagConstraints getFilterCheckboxConstraints() {
+        return getGridBagConstraints(1, 2, 3, 1, DEFAULT_INSETS,
+                1, 0.9, GridBagConstraints.CENTER, GridBagConstraints.BOTH);
+    }
+
+
     private static GridBagConstraints getFilterBriefDescConstraints() {
         return getGridBagConstraints(1, 1, 3, 1, DEFAULT_INSETS,
-                1, 0.3, GridBagConstraints.FIRST_LINE_START, GridBagConstraints.BOTH);
+                1, 0.1, GridBagConstraints.FIRST_LINE_START, GridBagConstraints.BOTH);
     }
 
     private static GridBagConstraints getManualTableConstraints() {

@@ -64,27 +64,31 @@ public class DisplayFrame extends JFrame {
     }
 
     private void handleInteractionEvent(PropertyChangeEvent propertyChangeEvent) {
-        if (propertyChangeEvent.getPropertyName().equals(PropertyChangeKeys.RUN_RAFFLE)) { //If the user has decided to run the raffle.
+        String propertyValue = propertyChangeEvent.getPropertyName();
+        if (propertyValue.equals(PropertyChangeKeys.RUN_RAFFLE)) { //If the user has decided to run the raffle.
             runRaffle();
-        } else if (propertyChangeEvent.getPropertyName().equals(PropertyChangeKeys.LOAD_ENTRIES)) {
+        } else if (propertyValue.equals(PropertyChangeKeys.LOAD_ENTRIES)) {
             loadEntries();
-        } else if (propertyChangeEvent.getPropertyName().equals(PropertyChangeKeys.RESET_ENTRIES)) {
+        } else if (propertyValue.equals(PropertyChangeKeys.RESET_ENTRIES)) {
             resetEntries();
-        } else if (propertyChangeEvent.getPropertyName().equals(PropertyChangeKeys.ITEMS_NAV_CHANGE)) {
+        } else if (propertyValue.equals(PropertyChangeKeys.ITEMS_NAV_CHANGE)) {
             NavigationLocations placeholder = (NavigationLocations) propertyChangeEvent.getNewValue();
             if (placeholder == NavigationLocations.ITEMS_AUTO_DETECT_PT2 || placeholder == NavigationLocations.ITEMS_AUTO_DETECT_PT1) { //Check for auto detect nav.
                 handleItemsADNavigation(placeholder);
             } else { //Handle manual navigation.
                 handleItemsManualNavigation(placeholder);
             }
-        } else if (propertyChangeEvent.getPropertyName().equals(PropertyChangeKeys.ITEMS_AD_QUANTITIES_CONFIRMED)) { //If quantities are confirmed, update information panel.
+        } else if (propertyValue.equals(PropertyChangeKeys.ITEMS_AD_QUANTITIES_CONFIRMED)) { //If quantities are confirmed, update information panel.
             informationPanel.setLoadItems_autoDetect_pt2();
-        } else if (propertyChangeEvent.getPropertyName().equals(PropertyChangeKeys.RESET_ITEMS)) {
+        } else if (propertyValue.equals(PropertyChangeKeys.RESET_ITEMS)) {
             resetItems();
-        } else if (propertyChangeEvent.getPropertyName().equals(PropertyChangeKeys.LOAD_ITEMS)) {
+        } else if (propertyValue.equals(PropertyChangeKeys.LOAD_ITEMS)) {
             loadItems();
-        } else if (propertyChangeEvent.getPropertyName().equals(PropertyChangeKeys.ITEMS_INFO_SET)) {
+        } else if (propertyValue.equals(PropertyChangeKeys.ITEMS_INFO_SET)) {
             validateManualInput((Boolean) propertyChangeEvent.getOldValue(), (String) propertyChangeEvent.getNewValue());
+        } else if (propertyValue.equals(PropertyChangeKeys.FILTER_ACTION)) {
+            System.out.println("Here in filter action.");
+            filterAction((String) propertyChangeEvent.getNewValue());
         }
         revalidate();
         repaint();
@@ -230,6 +234,14 @@ public class DisplayFrame extends JFrame {
         } else { //Display error message.
             ProgramDefaults.displayError(message, ProgramStrings.DIALOGUE_ERROR_TITLE, this);
         }
+    }
+
+    private void filterAction(String newValue) {
+        System.out.println("here");
+        ((Runnable) () -> {
+            RaffleDataStorage.updateFilter(newValue);
+            informationPanel.updateDuplicateCount();
+        }).run();
     }
 
 

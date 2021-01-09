@@ -9,7 +9,6 @@ import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 
 /**
  * Serves as the center panel for auto detecting items to raffle.
@@ -103,11 +102,11 @@ public class InteractionItemsCenter extends JPanel {
                 setManual_P3();
             }
         } else { //Display message that you cannot do this step without an entries file loaded.
-            setNoEntriesFile();
+            setNoEntriesPage();
         }
     }
 
-    private void setNoEntriesFile() {
+    private void setNoEntriesPage() {
         removeAll();
         setLayout(new GridLayout(0, 1));
         add(ProgramDefaults.getCenterAlignedInteractionLabel(ProgramStrings.ITEMS_NO_ENTRIES_BRIEF_DESC_L1));
@@ -152,16 +151,10 @@ public class InteractionItemsCenter extends JPanel {
      */
     private JPanel getAutoDetectChecklistPanel() {
         ArrayList<String> detectedValues = RaffleDataStorage.autoDetect();
-        JPanel checklistPanel = ProgramDefaults.getBlankPanel();
-        checklistPanel.setLayout(new GridLayout(0, 1));
+        JPanel checklistPanel = ProgramDefaults.getBlankPanel(new GridLayout(0, 1));
         checklistPanel.add(ProgramDefaults.getCenterAlignedInteractionLabel(ProgramStrings.ITEMS_AD_DETECTED_PROMPT));
-        int num2x2;
-        if (detectedValues.size() % 2 == 0)
-            num2x2 = detectedValues.size();
-        else
-            num2x2 = detectedValues.size() - 1;
-        JPanel subPanel = ProgramDefaults.getBlankPanel();
-        subPanel.setLayout(new GridLayout(1, 0));
+        int num2x2 = detectedValues.size() % 2 == 0 ? detectedValues.size() : detectedValues.size() - 1;
+        JPanel subPanel = ProgramDefaults.getBlankPanel(new GridLayout(1, 0));
         //Generate sub panel.
         for (int i = 0; i < num2x2; i++) {
             if (i != 0 && (i % 2 == 0)) { //For every two checkboxes added, add sub panel to the checklist panel, create new panel.
@@ -301,9 +294,9 @@ public class InteractionItemsCenter extends JPanel {
         setLayout(new GridLayout(0, 1));
         add(ProgramDefaults.getCenterAlignedInteractionLabel(ProgramStrings.ITEMS_MANUAL_P1_BRIEF_DESCRIPTION));
         if (RaffleDataStorage.hasItemsFile()) {
-            loadedFileText = ProgramDefaults.getFileDisplayLabel(RaffleDataStorage.getItemsFileString());
+            loadedFileText = ProgramDefaults.getUnderlineLabelLarge(RaffleDataStorage.getItemsFileString());
         } else {
-            loadedFileText = ProgramDefaults.getFileDisplayLabel(ProgramStrings.ITEMS_MANUAL_FILE_NO_FILE);
+            loadedFileText = ProgramDefaults.getUnderlineLabelLarge(ProgramStrings.ITEMS_MANUAL_FILE_NO_FILE);
         }
         //Text display
         JPanel textPanel = ProgramDefaults.getBlankPanel();

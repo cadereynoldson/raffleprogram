@@ -157,10 +157,10 @@ public class VerticalTabs extends JPanel implements MouseListener {
             if (holder != selected) { //New value set. Update display.
                 if (selected) {
                     setBackground(ProgramColors.BACKGROUND_COLOR);
-                    title.setFont(ProgramFonts.DEFAULT_FONT_ITALICS);
+                    title.setFont(ProgramFonts.SELECTED_TAB_FONT);
                 } else {
                     setBackground(ProgramColors.TAB_COLOR);
-                    title.setFont(ProgramFonts.DEFAULT_FONT_SMALL);
+                    title.setFont(ProgramFonts.DEFAULT_TAB_FONT);
                 }
             }
             repaint();

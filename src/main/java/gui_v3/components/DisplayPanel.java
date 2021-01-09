@@ -23,8 +23,6 @@ public abstract class DisplayPanel extends JPanel{
             setLoadItems_manual_pt1();
         } else if (navLoc == NavigationLocations.ITEMS_MANUAL_PT2) {
             setLoadItems_manual_pt2();
-        } else if (navLoc == NavigationLocations.ITEMS_MANUAL_PT3) {
-            setLoadItems_manual_pt3();
         } else if (navLoc == NavigationLocations.FILTER) {
             setRemoveDuplicates();
         } else if (navLoc == NavigationLocations.WINNERS) {
@@ -43,8 +41,6 @@ public abstract class DisplayPanel extends JPanel{
     abstract void setLoadItems_manual_pt1();
 
     abstract void setLoadItems_manual_pt2();
-
-    abstract void setLoadItems_manual_pt3();
 
     abstract void setRemoveDuplicates();
 

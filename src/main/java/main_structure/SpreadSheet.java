@@ -118,6 +118,18 @@ public class SpreadSheet {
         }
         return mapping;
     }
+
+    public int getUniqueValueCounts(int index) {
+        Column c = columns.get(index);
+        return c.getUniqueValues().size();
+    }
+
+    public int getUniqueValueCounts(String columnName) {
+        int columnIndex = getColumnIndex(columnName);
+        if (columnIndex == -1)
+            return -1;
+        return getUniqueValueCounts(columnIndex);
+    }
     
     /**
      * Returns the index of a column given its name. 

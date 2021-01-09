@@ -27,9 +27,9 @@ public class InteractionEntriesCenter extends JPanel {
         JPanel selectedFilePanel = ProgramDefaults.getBlankPanel();
         JLabel fileLoadPrompt = ProgramDefaults.getRightAlignedInteractionLabel(ProgramStrings.ENTRIES_SELECTED_FILE_PROMPT);
         if (RaffleDataStorage.hasEntriesFile()) //If an entries file has been loaded previous to being in this page.
-            loadedFileText = ProgramDefaults.getFileDisplayLabel(RaffleDataStorage.getEntriesFileString());
+            loadedFileText = ProgramDefaults.getUnderlineLabelLarge(RaffleDataStorage.getEntriesFileString());
         else
-            loadedFileText = ProgramDefaults.getFileDisplayLabel(ProgramStrings.ENTRIES_INFORMATION_FILE_STATUS_NO_FILE_LOADED);
+            loadedFileText = ProgramDefaults.getUnderlineLabelLarge(ProgramStrings.ENTRIES_INFORMATION_FILE_STATUS_NO_FILE_LOADED);
         selectedFilePanel.setLayout(new GridLayout(1, 0));
         selectedFilePanel.add(fileLoadPrompt);
         selectedFilePanel.add(loadedFileText);

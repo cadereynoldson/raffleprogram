@@ -87,6 +87,10 @@ public class ProgramStrings {
 
     public static final String ENTRIES_INFORMATION_BUTTON_RESET_FILE = "RESET FILE";
 
+    public static final String ENTRIES_INFORMATION_ROW_COUNT_PROMPT = "Number Of Entries: ";
+
+    public static final String ENTRIES_INFORMATION_COL_COUNT_PROMPT = "Number Of Columns: ";
+
     /* ITEMS PAGE STRINGS ***********************************************************/
 
     public static final String ITEMS_NO_ENTRIES_TITLE = "Load Items";
@@ -112,7 +116,8 @@ public class ProgramStrings {
 
     public static final String ITEMS_NO_ENTRIES_BRIEF_DESC_L2 = strToHTML("<center><b>You don't have an entries file loaded!</b></center>");
 
-    public static final String ITEMS_NO_ENTRIES_BRIEF_DESC_L3 = strToHTML("This is an essential part of setting your raffle items. Return to this page when you have loaded the file.");
+    public static final String ITEMS_NO_ENTRIES_BRIEF_DESC_L3 = strToHTML("This is an essential part of setting your raffle items. " +
+            "<br/><br/>Return to this page when you have loaded the file.");
 
     public static final String ITEMS_AD_CONTINUE_BUTTON = "CONTINUE";
 
@@ -214,8 +219,25 @@ public class ProgramStrings {
 
     /* REMOVE DUPLICATE ENTRIES STRINGS *********************************************/
 
-    public static final String FILTER_BRIEF_DESC = strToHTML("<center>Filter out people who have entered your raffle more than once!" +
-            "<br/><br/>This step works by assuring only one unique value exists in each column checkbox!<center/>");
+    public static final String FILTER_TITLE = "Remove Duplicate Entries";
+
+    public static final String FILTER_BRIEF_DESC = strToHTML("<center>Filter out people who have entered your raffle more than once." +
+            "<br/><br/>This step works by assuring only one unique value exists in each column checkbox. Use it wisely.</center>");
+
+    public static final String FILTER_NO_ENTRIES_L1 = strToHTML("<center><b>You don't have an entries file loaded!</b></center>");
+
+    public static final String FILTER_NO_ENTRIES_L2 = strToHTML("<center>This step requires you have entries loaded." +
+            "<br/><br/>Return to this page once you have loaded the file containing your raffle entries.</center>");
+
+    public static final String FILTER_COLUMN_PROMPT = "Entries Columns:";
+
+    public static final String FILTER_UNIQUE_VALS = "Number of Unique Values:";
+
+    public static final String FILTER_INFO_ORIGINAL_COUNT = "Total Original Entries:";
+
+    public static final String FILTER_INFO_CURRENT_COUNT = "Current Entries:";
+
+    public static final String FILTER_INFO_DUPLICATES_REMOVED = "Duplicate Entries Removed:";
 
     /* DIALOGUE STRINGS *************************************************************/
 
@@ -260,11 +282,11 @@ public class ProgramStrings {
 
     public static final String DIALOGUE_ITEMS_MANUAL_NO_DISTRIBUTION_VALUES = "You haven't selected any distribution values!\nThis is necessary to running a raffle.";
 
-    public static final String DIALOGUE_ITEMS_MANUAL_COUNT_COL_ERR = "The count column contains one or more non number values!";
+    public static final String DIALOGUE_ITEMS_MANUAL_COUNT_COL_ERR = "The selected count column contains\none or more non number values!";
 
     public static final String DIALOGUE_ITEMS_MANUAL_NO_ENTRIES_COL_ERR = "One or more columns in your entries sheet don't " +
             "\ncontain the same name as one one the distribution values you selected!" +
-            "\nSource of the error, column: ";
+            "\nSource of the error, distribution value: ";
 
     public static final String DIALOGUE_SUCCESS_TITLE = "Success";
 
@@ -280,14 +302,28 @@ public class ProgramStrings {
      * Converts a string to HTML so lines can wrap within a JLabel.
      * Surrounds the string with "<html> <html>" tags.
      * @param s the string to convert to HTML.
-     * @return the string s converted to html (
+     * @return the string s converted to html.
      */
     public static String strToHTML(String s) {
         return "<html>" + s + "</html>";
     }
 
+    /**
+     * Converts a string to HTML text with an underline.
+     * @param s the string to convert.
+     * @return the parameterized string formatted as HTML with an underline.
+     */
     public static  String getUnderlinedHTMLString(String s) {
         return strToHTML("<u>" + s + "</u>");
     }
+
+    /**
+     * Method for converting a string to a string which can neatly be displayed as a checkbox title.
+     * @param s 
+     * @return
+     */
+    public static String strToCheckboxStr(String s) { return "   " + s; }
+
+    public static String checkboxStrToStr(String s) { return s.trim(); }
 
 }

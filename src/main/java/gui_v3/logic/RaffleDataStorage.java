@@ -132,6 +132,20 @@ public class RaffleDataStorage {
     }
 
     /**
+     * Returns a reference to the original entries sheet.
+     * @return a reference to the original entries sheet.
+     */
+    public static SpreadSheet getOriginalEntriesSheet() { return originalEntriesSheet; }
+
+    /**
+     * Returns a reference to the current entries sheet.
+     * @return a reference to the current entries sheet.
+     */
+    public static SpreadSheet getCurrentEntriesSheet() {
+        return currentEntriesSheet;
+    }
+
+    /**
      * Returns the string to display for the entries file.
      * @return the string to display for the entries file.
      */
@@ -285,6 +299,11 @@ public class RaffleDataStorage {
         return s;
     }
 
+    /**
+     * Sets the count column field given an given a string name. This method assures that the count column contains a number.
+     * @param columnName the name of the column to mark as the count column.
+     * @throws IllegalArgumentException In the case of the column containing a non number value.
+     */
     public static void setCountColumn(String columnName) throws IllegalArgumentException {
         int col =  itemsSheet.getColumnIndex(columnName);
         for (int i = 0; i < itemsSheet.getNumRows(); i++) {
@@ -321,5 +340,29 @@ public class RaffleDataStorage {
             }
             selectedDistributionValues.add(columnName);
         }
+    }
+
+    /**
+     * Adds or removes a filter conducted on the entries dataset.
+     * @param filterValue the filter value to add or remove from this dataset.
+     */
+    public static void updateFilter(String filterValue) {
+        synchronized (chosenFilters) { //Synchronized on chosen filters. Make sure any thread altering actions wait here for the current chosen filter action to be completed.
+            if (chosenFilters.contains(filterValue)) { //Check for filters list containing.
+                //Remove filter and re-set current filtering data.
+                chosenFilters.remove(filterValue);
+                currentEntriesSheet = originalEntriesSheet;
+                for (String filter : chosenFilters)
+                    currentEntriesSheet = currentEntriesSheet.eliminateDuplicates(filter);
+            } else {
+                //Add filter and update current sheet.
+                chosenFilters.add(filterValue);
+                currentEntriesSheet = currentEntriesSheet.eliminateDuplicates(filterValue);
+            }
+        }
+    }
+
+    public static HashSet<String> getFilterValues() {
+        return new HashSet<>(chosenFilters);
     }
 }

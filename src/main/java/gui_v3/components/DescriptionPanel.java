@@ -3,6 +3,7 @@ package gui_v3.components;
 import gui_v3.logic.*;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
 public class DescriptionPanel extends DisplayPanel {
@@ -12,6 +13,8 @@ public class DescriptionPanel extends DisplayPanel {
     public DescriptionPanel() {
         super();
         descriptionTitle = ProgramDefaults.getCenteredTitle(ProgramStrings.INTERACTION_HOME_TITLE);
+        descriptionTitle.setFont(ProgramFonts.DESCRIPTION_TITLE_FONT);
+        descriptionTitle.setBorder(new EmptyBorder(10, 10, 10, 10));
         initComponents();
         setHome();
         setPreferredSize(new Dimension(400, 0));
@@ -117,11 +120,6 @@ public class DescriptionPanel extends DisplayPanel {
                 ProgramDefaults.getDescriptionLabel(ProgramStrings.ITEMS_MANUAL_DESCRIPTION_P2_L1),
                 ProgramDefaults.getDescriptionLabel(ProgramStrings.ITEMS_MANUAL_DESCRIPTION_P2_L2)
         );
-    }
-
-    @Override
-    public void setLoadItems_manual_pt3() {
-
     }
 
     @Override

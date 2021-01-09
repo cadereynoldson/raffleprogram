@@ -94,12 +94,8 @@ public class InteractionPanel extends DisplayPanel {
     }
 
     @Override
-    public void setLoadItems_manual_pt3() {
-    }
-
-    @Override
     public void setRemoveDuplicates() {
-
+        resetComponents(ProgramStrings.FILTER_TITLE, new InteractionFilteringCenter(pcs));
     }
 
     @Override
