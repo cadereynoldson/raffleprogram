@@ -8,12 +8,18 @@ import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeSupport;
 import java.util.HashSet;
 
+/**
+ * The center panel for filtering the entries dataset.
+ * @version 1.0
+ * @author Cade Reynoldson
+ */
 public class InteractionFilteringCenter extends JPanel {
 
     /** Property change support to notify parent display with of changes. */
     private PropertyChangeSupport pcs;
 
     public InteractionFilteringCenter(PropertyChangeSupport pcs) {
+        super();
         this.pcs = pcs;
         initTheme();
         initComponents();

@@ -16,6 +16,12 @@ public class DisplayFrame extends JFrame {
     /** The current location being displayed in the frame. */
     private NavigationLocations currentLocation;
 
+    /** The last ITEM location displayed. */
+    private NavigationLocations lastItemLocation;
+
+    /** The las RUN RAFFLE location displayed. */
+    private NavigationLocations lastRunRaffleLocation;
+
     /** The description panel. Displays an in-depth description about the tab the user is on. */
     private DescriptionPanel descriptionPanel;
 
@@ -26,19 +32,12 @@ public class DisplayFrame extends JFrame {
     private InformationPanel informationPanel;
 
     /** The side tab menu. Acts as the main navigation tool of the program. */
-    private VerticalTabs tabsAndProgressCircle;
-
-    /** The last ITEM location displayed. */
-    private NavigationLocations lastItemLocation;
-
-    /** The count column of the items spreadsheet. */
-    private int countColumn;
+    private VerticalTabs tabs;
 
     public DisplayFrame() {
         super();
         setIconImage(ProgramDefaults.getRaffleTicketIcon().getImage());
         setTitle("Raffle By Cade");
-        lastItemLocation = NavigationLocations.ITEMS_AUTO_DETECT_PT1;
         initComponents();
         initLayout();
     }
@@ -50,14 +49,16 @@ public class DisplayFrame extends JFrame {
         descriptionPanel = new DescriptionPanel();
         interactionPanel = new InteractionPanel(this::handleInteractionEvent);
         informationPanel = new InformationPanel();
-        tabsAndProgressCircle = new VerticalTabs(this::handleTabNavigationEvent);
+        tabs = new VerticalTabs(this::handleTabNavigationEvent);
         currentLocation = NavigationLocations.HOME;
+        lastItemLocation = NavigationLocations.ITEMS_AUTO_DETECT_PT1;
+        lastRunRaffleLocation = NavigationLocations.RUN_RAFFLE_REVIEW;
     }
 
     private void initLayout() {
         setLayout(new GridBagLayout());
         add(descriptionPanel, ProgramDimensions.DESCRIPTION_CONSTRAINTS);
-        add(tabsAndProgressCircle, ProgramDimensions.TOOLBAR_CONSTRAINTS);
+        add(tabs, ProgramDimensions.TOOLBAR_CONSTRAINTS);
         add(interactionPanel, ProgramDimensions.INTERACTION_CONSTRAINTS);
         add(informationPanel, ProgramDimensions.INFORMATION_CONSTRAINTS);
         repaint();
@@ -87,8 +88,11 @@ public class DisplayFrame extends JFrame {
         } else if (propertyValue.equals(PropertyChangeKeys.ITEMS_INFO_SET)) {
             validateManualInput((Boolean) propertyChangeEvent.getOldValue(), (String) propertyChangeEvent.getNewValue());
         } else if (propertyValue.equals(PropertyChangeKeys.FILTER_ACTION)) {
-            System.out.println("Here in filter action.");
             filterAction((String) propertyChangeEvent.getNewValue());
+        } else if (propertyValue.equals(PropertyChangeKeys.REMOVE_ENTRY)) {
+            raffleRemoveEntry((Integer) propertyChangeEvent.getNewValue());
+        } else if (propertyValue.equals(PropertyChangeKeys.SET_AS_WINNER)) {
+            raffleSetAsWinner((Integer) propertyChangeEvent.getNewValue());
         }
         revalidate();
         repaint();
@@ -128,11 +132,16 @@ public class DisplayFrame extends JFrame {
                     != JOptionPane.OK_OPTION) //If the user selects anything other than ok, cancel navigation.
                     return;
             }
+            if (currentLocation == NavigationLocations.RUN_RAFFLE_REVIEW) { //If navigating away from the run raffle review panel, save all changes.
+                //TODO: SAVE OR REMOVE CHANGES!
+            }
             currentLocation = (NavigationLocations) propertyChangeEvent.getNewValue();
-            tabsAndProgressCircle.changeNavLocation(currentLocation);
-            System.out.println(currentLocation);
-            if (currentLocation == NavigationLocations.ITEMS)  //If navigating to the items tab - navigate using the last items location recorded.
+//            System.out.println("TAB NAV EVENT -- " + currentLocation);
+            tabs.changeNavLocation(currentLocation);
+            if (currentLocation == NavigationLocations.ITEMS)  //If using the items tab - navigate using the last items location recorded.
                 currentLocation = lastItemLocation;
+            else if (currentLocation == NavigationLocations.RUN_RAFFLE) //If using the run raffle tab - navigate using the last items location recorded.
+                currentLocation = lastRunRaffleLocation;
             updateContents();
         }
     }
@@ -155,7 +164,7 @@ public class DisplayFrame extends JFrame {
                         != JOptionPane.OK_OPTION)
                     return;
             }
-            //TODO: RUN RAFFLE.
+
         } else {
             ProgramDefaults.displayError(ProgramStrings.DIALOGUE_RAFFLE_NOT_READY, ProgramStrings.DIALOGUE_RAFFLE_NOT_READY_TITLE, this);
         }
@@ -237,11 +246,37 @@ public class DisplayFrame extends JFrame {
     }
 
     private void filterAction(String newValue) {
-        System.out.println("here");
         ((Runnable) () -> {
             RaffleDataStorage.updateFilter(newValue);
             informationPanel.updateDuplicateCount();
         }).run();
+    }
+
+    /**
+     * Removes an entry manually. This method is CURRENTLY only called when the current view is run raffle.
+     * @param index
+     */
+    private void raffleRemoveEntry(int index) {
+        try {
+            RaffleDataStorage.removeEntry(index);
+            if (interactionPanel.getCenterPanel() instanceof InteractionRunRaffleCenter)
+                ((InteractionRunRaffleCenter) interactionPanel.getCenterPanel()).removeFromTable(index);
+            //TODO: UPDATE ALL PANELS!
+        }  catch (IllegalArgumentException e) {
+            ProgramDefaults.displayError(e.getMessage(), ProgramStrings.DIALOGUE_ERROR_TITLE, this);
+        }
+
+    }
+
+    private void raffleSetAsWinner(int index) {
+        try {
+            RaffleDataStorage.setAsWinner(index);
+            if (interactionPanel.getCenterPanel() instanceof InteractionRunRaffleCenter)
+                ((InteractionRunRaffleCenter) interactionPanel.getCenterPanel()).removeFromTable(index);
+            //TODO: UPDATE ALL PANELS!
+        } catch (IllegalArgumentException e) {
+            ProgramDefaults.displayError(e.getMessage(), ProgramStrings.DIALOGUE_ERROR_TITLE, this);
+        }
     }
 
 

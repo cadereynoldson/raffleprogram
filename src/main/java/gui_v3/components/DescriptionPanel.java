@@ -124,11 +124,24 @@ public class DescriptionPanel extends DisplayPanel {
 
     @Override
     public void setRemoveDuplicates() {
-
+        refreshDisplay(
+                ProgramStrings.FILTER_DESCRIPTION_TITLE,
+                ProgramDefaults.getDescriptionLabel(ProgramStrings.FILTER_DESCRIPTION_L1),
+                ProgramDefaults.getDescriptionLabel(ProgramStrings.FILTER_DESCRIPTION_L2),
+                ProgramDefaults.getDescriptionLabel(ProgramStrings.FILTER_DESCRIPTION_L3)
+        );
     }
 
     @Override
-    public void setRaffleWinners() {
+    void setRunRaffleReview() {
+        refreshDisplay(ProgramStrings.RAFFLE_REVIEW_DESC_TITLE,
+                ProgramDefaults.getDescriptionLabel(ProgramStrings.RAFFLE_REVIEW_DESC_L1),
+                ProgramDefaults.getDescriptionLabel(ProgramStrings.RAFFLE_REVIEW_DESC_L2));
+    }
+
+    @Override
+    void setRunRaffleWinners() {
 
     }
+
 }

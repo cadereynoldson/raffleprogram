@@ -27,7 +27,7 @@ public class VerticalTabs extends JPanel implements MouseListener {
     private TabItem removeDuplicates;
 
     /** Tab item for the raffle winners. */
-    private TabItem raffleWinners;
+    private TabItem runRaffle;
 
     /** A reference to the selected tab. */
     private TabItem selectedTab;
@@ -43,7 +43,7 @@ public class VerticalTabs extends JPanel implements MouseListener {
         loadEntries = new TabItem(ProgramStrings.TAB_LOAD_ENTRIES, NavigationLocations.ENTRIES, this);
         loadItems = new TabItem(ProgramStrings.TAB_LOAD_ITEMS, NavigationLocations.ITEMS, this);
         removeDuplicates = new TabItem(ProgramStrings.TAB_REMOVE_DUPLICATES, NavigationLocations.FILTER, this);
-        raffleWinners = new TabItem(ProgramStrings.TAB_RAFFLE_WINNERS, NavigationLocations.WINNERS, this);
+        runRaffle = new TabItem(ProgramStrings.TAB_RUN_RAFFLE, NavigationLocations.RUN_RAFFLE, this);
         selectedTab = homeTab;
         initComponents();
     }
@@ -55,7 +55,7 @@ public class VerticalTabs extends JPanel implements MouseListener {
         add(loadEntries);
         add(loadItems);
         add(removeDuplicates);
-        add(raffleWinners);
+        add(runRaffle);
     }
 
     public void changeNavLocation(NavigationLocations newLocation) {
@@ -73,8 +73,8 @@ public class VerticalTabs extends JPanel implements MouseListener {
             case FILTER:
                 selectedTab = removeDuplicates;
                 break;
-            case WINNERS:
-                selectedTab = raffleWinners;
+            case RUN_RAFFLE:
+                selectedTab = runRaffle;
                 break;
         }
         selectedTab.setSelected(true);

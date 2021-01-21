@@ -63,6 +63,17 @@ public class InteractionPanel extends DisplayPanel {
         }
     }
 
+    private void updateRunRaffleComponents(String newTitle, NavigationLocations newLocation) {
+        if (centerPanel instanceof InteractionRunRaffleCenter) {
+            ((InteractionRunRaffleCenter) centerPanel).setLocationDisplayed(newLocation);
+            title.setText(newTitle);
+            revalidate();
+            repaint();
+        } else {
+            resetComponents(newTitle, new InteractionRunRaffleCenter(pcs, newLocation));
+        }
+    }
+
     @Override
     public void setHome() {
         resetComponents(ProgramStrings.INTERACTION_HOME_TITLE, new InteractionHomeCenter(pcs));
@@ -99,7 +110,13 @@ public class InteractionPanel extends DisplayPanel {
     }
 
     @Override
-    public void setRaffleWinners() {
+    void setRunRaffleReview() {
+        updateRunRaffleComponents(ProgramStrings.RAFFLE_REVIEW_TITLE, NavigationLocations.RUN_RAFFLE_REVIEW);
+    }
+
+
+    @Override
+    void setRunRaffleWinners() {
 
     }
 }

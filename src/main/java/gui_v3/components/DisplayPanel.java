@@ -25,8 +25,10 @@ public abstract class DisplayPanel extends JPanel{
             setLoadItems_manual_pt2();
         } else if (navLoc == NavigationLocations.FILTER) {
             setRemoveDuplicates();
-        } else if (navLoc == NavigationLocations.WINNERS) {
-            setRaffleWinners();
+        } else if (navLoc == NavigationLocations.RUN_RAFFLE_REVIEW) {
+            setRunRaffleReview();
+        } else if (navLoc == NavigationLocations.RUN_RAFFLE_SHOW_WINNERS) {
+            setRunRaffleWinners();
         }
     }
 
@@ -44,5 +46,7 @@ public abstract class DisplayPanel extends JPanel{
 
     abstract void setRemoveDuplicates();
 
-    abstract void setRaffleWinners();
+    abstract void setRunRaffleReview();
+
+    abstract void setRunRaffleWinners();
 }

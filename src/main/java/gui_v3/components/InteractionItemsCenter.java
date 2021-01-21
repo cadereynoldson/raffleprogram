@@ -98,8 +98,6 @@ public class InteractionItemsCenter extends JPanel {
                 setManual_P1();
             } else if (locationDisplayed == NavigationLocations.ITEMS_MANUAL_PT2) {
                 setManual_P2();
-            } else if (locationDisplayed == NavigationLocations.ITEMS_MANUAL_PT3) {
-                setManual_P3();
             }
         } else { //Display message that you cannot do this step without an entries file loaded.
             setNoEntriesPage();
@@ -234,18 +232,21 @@ public class InteractionItemsCenter extends JPanel {
     private void confirmQuantities(ActionEvent actionEvent) {
         //Check for valid quantities input!
         int quantitiesIndex = autoDetectTable.getColumn(ProgramStrings.QUANTITY_COLUMN_NAME).getModelIndex();
-        int zeroCounts = 0;
+        int zeroCount = 0;
         for (int i = 0; i < autoDetectTable.getRowCount(); i++) {
             try {
-                if (Integer.parseInt(autoDetectTable.getValueAt(i, quantitiesIndex).toString()) == 0)
-                    zeroCounts++;
+                int value = Integer.parseInt(autoDetectTable.getValueAt(i, quantitiesIndex).toString());
+                if (value == 0)
+                    zeroCount++;
+                else if (value < 0) //If a negative value is in the table display error.
+                    throw new IllegalArgumentException();
             } catch (Exception e) {
                 displayQuantitiesError();
                 return;
             }
         }
         //If any zeros are present in the input column of the table, display a warning method.
-        if (zeroCounts > 0)
+        if (zeroCount > 0)
             if (displayQuantitiesWarning() != JOptionPane.YES_OPTION)
                 return;
         //All error handling completed. Create table and set values.
@@ -383,9 +384,5 @@ public class InteractionItemsCenter extends JPanel {
             }
             pcs.firePropertyChange(PropertyChangeKeys.ITEMS_INFO_SET, status, statusString);
         }
-    }
-
-    private void setManual_P3() {
-
     }
 }

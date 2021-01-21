@@ -235,6 +235,48 @@ public class ProgramDefaults {
         return box;
     }
 
+    /**
+     * Creates a "Check list" a user would reference to see the status of their raffle. Will display what necessary steps the user
+     * has conducted to run their raffle.
+     * @return a JPanel containing a list of items they need to complete.
+     */
+    public static JPanel getRaffleCheckList() {
+        JPanel checklistPanel = ProgramDefaults.getBlankPanel();
+        checklistPanel.setLayout(new BorderLayout());
+        JLabel checkListLabel = ProgramDefaults.getCenterAlignedInteractionLabel(ProgramStrings.HOME_CHECKLIST_TITLE);
+        JLabel entriesImage, itemsImage, filterImage;
+        //Entries image.
+        if (RaffleDataStorage.hasEntriesFile())
+            entriesImage = new JLabel(ProgramDefaults.getCheckIcon());
+        else
+            entriesImage = new JLabel(ProgramDefaults.getXIcon());
+        if (RaffleDataStorage.hasItems())
+            itemsImage = new JLabel(ProgramDefaults.getCheckIcon());
+        else
+            itemsImage = new JLabel(ProgramDefaults.getXIcon());
+        if (RaffleDataStorage.hasFiltered())
+            filterImage = new JLabel(ProgramDefaults.getCheckIcon());
+        else
+            filterImage = new JLabel(ProgramDefaults.getXIcon());
+        entriesImage.setHorizontalAlignment(SwingConstants.CENTER);
+        itemsImage.setHorizontalAlignment(SwingConstants.CENTER);
+        filterImage.setHorizontalAlignment(SwingConstants.CENTER);
+        JLabel entriesText = ProgramDefaults.getLeftAlignedInteractionLabel(ProgramStrings.HOME_CHECKLIST_ENTRIES);
+        JLabel itemsText = ProgramDefaults.getLeftAlignedInteractionLabel(ProgramStrings.HOME_CHECKLIST_ITEMS);
+        JLabel filterText =  ProgramDefaults.getLeftAlignedInteractionLabel(ProgramStrings.HOME_CHECKLIST_FILTER);
+        JPanel checklistItemsContainer = ProgramDefaults.getBlankPanel();
+        checklistItemsContainer.setLayout(new GridLayout(0, 2));
+        checklistItemsContainer.add(entriesImage);
+        checklistItemsContainer.add(entriesText);
+        checklistItemsContainer.add(itemsImage);
+        checklistItemsContainer.add(itemsText);
+        checklistItemsContainer.add(filterImage);
+        checklistItemsContainer.add(filterText);
+        checklistPanel.add(checkListLabel, BorderLayout.NORTH);
+        checklistPanel.add(checklistItemsContainer, BorderLayout.CENTER);
+        return checklistPanel;
+    }
+
     /* TABLE METHODS *****************************************************/
 
     /**
@@ -278,6 +320,7 @@ public class ProgramDefaults {
                 return false;
             }
         };
+        table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         //Left render all items.
         for (int i = 0; i < table.getColumnCount(); i++) {
             DefaultTableCellRenderer r = new DefaultTableCellRenderer();
@@ -397,19 +440,6 @@ public class ProgramDefaults {
      */
     public static ImageIcon getRaffleTicketIcon() {
         return new ImageIcon(ProgramDefaults.class.getResource("/RaffleTicket.jpg"));
-    }
-
-    /**
-     * Converts the directory of a file to it's shortform path.
-     * @param f the file to convert.
-     * @return the converted file path to display.
-     */
-    public static String getFileName(File f) {
-        String[] list = f.toString().split(Pattern.quote("\\"));
-        if (list.length == 1)
-            return "...\\" + list[0];
-        else
-            return "...\\" + list[list.length - 2] + "\\" + list[list.length - 1];
     }
 
     public static int displayYesNoConfirm(String message, String title, Container displayIn) {

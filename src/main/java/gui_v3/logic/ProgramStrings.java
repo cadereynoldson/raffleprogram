@@ -1,5 +1,8 @@
 package gui_v3.logic;
 
+import java.io.File;
+import java.util.regex.Pattern;
+
 public class ProgramStrings {
 
     /* TAB STRINGS *************************************************************/
@@ -8,7 +11,7 @@ public class ProgramStrings {
     public static final String TAB_LOAD_ENTRIES = "<html><center>Load<br/>Entries</center><html>";
     public static final String TAB_LOAD_ITEMS = "<html><center>Load<br/>Items</center><html>";
     public static final String TAB_REMOVE_DUPLICATES = "<html><center>Remove<br/>Duplicates</center><html>";
-    public static final String TAB_RAFFLE_WINNERS = "<html><center>Raffle<br/>Winners</center><html>";
+    public static final String TAB_RUN_RAFFLE = "<html><center>Run<br/>Raffle</center><html>";
 
     /* HOME PAGE STRINGS *************************************************************/
 
@@ -239,6 +242,49 @@ public class ProgramStrings {
 
     public static final String FILTER_INFO_DUPLICATES_REMOVED = "Duplicate Entries Removed:";
 
+    public static final String FILTER_DESCRIPTION_TITLE = "Remove Duplicates Description";
+
+    public static final String FILTER_DESCRIPTION_L1 = strToHTML("<center>Filter out the people who entered your raffle multiple times.</center>");
+
+    public static final String FILTER_DESCRIPTION_L2 = strToHTML("<center>For example, checking the column named \"address\" would ensure that there are no duplicate address values in the raffle.</center>");
+
+    public static final String FILTER_DESCRIPTION_L3 = strToHTML("<center><b>Beware!</b> Some checkboxes shouldn't be selected, such as values that multiple people could have in common." +
+            "<br/>These include but are not limited to:" +
+            "<br/>- Any kind of first or last name." +
+            "<br/>- Things you would distribute items by. (See the \"load items\" step.)</center>");
+
+    /* RUN RAFFLE STRINGS ***********************************************************/
+
+    public static final String RAFFLE_REVIEW_TITLE = "Review Raffle Entries";
+
+    public static final String RAFFLE_REVIEW_DESC_TITLE = "Review Entries Description";
+
+    public static final String RAFFLE_REVIEW_DESC_L1 = strToHTML("Review the entries of your raffle for anything that this program may have missed.");
+
+    public static final String RAFFLE_REVIEW_DESC_L2 = strToHTML("You can also manually select winners using the \"SET AS WINNER\" button when highlighting an entry.");
+
+    public static final String RAFFLE_REVIEW_BRIEF_DESC = strToHTML("<center>Review the entries of your raffle." +
+            "<br/>Manually remove entries, or designate those special shop patrons as winners.</center>");
+
+    public static final String RAFFLE_REVIEW_NOT_READY = strToHTML("<center>You aren't ready to run your raffle." +
+            "<br/>See the following checklist for what you're missing.</center>");
+
+    public static final String RAFFLE_REVIEW_REMOVE = "REMOVE ENTRY";
+
+    public static final String RAFFLE_REVIEW_WINNER = "SET AS WINNER";
+
+    public static final String RAFFLE_REVIEW_RUN_RAFFLE = "RUN RAFFLE";
+
+    public static final String RAFFLE_REVIEW_ENTRIES_TITLE = "Entries Information";
+
+    public static final String RAFFLE_REVIEW_ITEMS_TITLE = "Items Information";
+
+    public static final String RAFFLE_REVIEW_INFO_FILE = "File:";
+
+    public static final String RAFFLE_REVIEW_ENTRIES_COUNT = "Total Entries:";
+
+    public static final String RAFFLE_REVIEW_ITEMS_COUNT = "Total Items:";
+
     /* DIALOGUE STRINGS *************************************************************/
 
     public static final String DIALOGUE_RAFFLE_NOT_READY_TITLE = "Missing raffle steps";
@@ -271,7 +317,8 @@ public class ProgramStrings {
             "\nSelecting yes will finish the confirm quantities process.";
 
     public static final String DIALOGUE_ITEMS_AD_QUANTITIES_ERROR = "There are one or more quantity values which are not a number!\n" +
-            "All quantities MUST be in the form of a non decimal number, such as \"1\" or \"44\"";
+            "There may also be a negative number!" +
+            "All quantities MUST be in the form of a positive decimal number, such as \"1\" or \"44\"";
 
     public static final String DIALOGUE_ITEMS_AD_QUANTITIES_SUCCESS = "Successfully Confirmed Quantities!";
 
@@ -325,5 +372,32 @@ public class ProgramStrings {
     public static String strToCheckboxStr(String s) { return "   " + s; }
 
     public static String checkboxStrToStr(String s) { return s.trim(); }
+
+    /**
+     * Returns ONLY the name and extension of a loaded file.
+     * @param s the string to parse for just the file name.
+     * @return the name of and extension of a loaded file.
+     */
+    public static String getFileName(String s) {
+        String[] list  = s.split(Pattern.quote("\\"));
+        return "...\\" + list[list.length - 1];
+    }
+
+    public static String getLongFileName(String s) {
+        String[] list = s.split(Pattern.quote("\\"));
+        if (list.length == 1)
+            return "...\\" + list[0];
+        else
+            return "...\\" + list[list.length - 2] + "\\" + list[list.length - 1];
+    }
+
+    /**
+     * Converts the directory of a file to it's shortform path.
+     * @param f the file to convert.
+     * @return the converted file path to display.
+     */
+    public static String getLongFileName(File f) {
+        return getLongFileName(f.toString());
+    }
 
 }

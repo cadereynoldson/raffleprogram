@@ -46,6 +46,13 @@ public class ProgramDimensions {
 
     public static final GridBagConstraints FILTER_CHECKBOX_CONSTRAINTS = getFilterCheckboxConstraints();
 
+    public static final GridBagConstraints RAFFLE_TABLE_CONSTRAINTS = getRaffleTableConstraints();
+
+    public static final GridBagConstraints RAFFLE_REVIEW_BRIEF_DESC_CONSTRAINTS = getRaffleBriefDescConstraints();
+
+    public static final GridBagConstraints RAFFLE_REVIEW_BUTTON_PANEL_CONSTRAINTS = getRaffleButtonConstraints();
+
+
     private static GridBagConstraints getGridBagConstraints(int gridx, int gridy, int gridwidth, int gridheight,
             Insets insets, double weightx, double weighty, int anchor, int fill) {
         GridBagConstraints c = new GridBagConstraints();
@@ -61,14 +68,29 @@ public class ProgramDimensions {
         return c;
     }
 
+    private static GridBagConstraints getRaffleBriefDescConstraints() {
+        return getGridBagConstraints(0, 0, 3, 1, DEFAULT_INSETS,
+                1, 0.3, GridBagConstraints.CENTER, GridBagConstraints.BOTH);
+    }
+
+    private static GridBagConstraints getRaffleTableConstraints() {
+        return getGridBagConstraints(0, 1, 3, 1, DEFAULT_INSETS,
+                1, 0.9, GridBagConstraints.CENTER, GridBagConstraints.BOTH);
+    }
+
+    private static GridBagConstraints getRaffleButtonConstraints() {
+        return getGridBagConstraints(0, 2, 3, 1, DEFAULT_INSETS,
+                1, 0.3, GridBagConstraints.CENTER, GridBagConstraints.BOTH);
+    }
+
     private static GridBagConstraints getFilterCheckboxConstraints() {
-        return getGridBagConstraints(1, 2, 3, 1, DEFAULT_INSETS,
+        return getGridBagConstraints(0, 1, 3, 1, DEFAULT_INSETS,
                 1, 0.9, GridBagConstraints.CENTER, GridBagConstraints.BOTH);
     }
 
 
     private static GridBagConstraints getFilterBriefDescConstraints() {
-        return getGridBagConstraints(1, 1, 3, 1, DEFAULT_INSETS,
+        return getGridBagConstraints(0, 0, 3, 1, DEFAULT_INSETS,
                 1, 0.1, GridBagConstraints.FIRST_LINE_START, GridBagConstraints.BOTH);
     }
 

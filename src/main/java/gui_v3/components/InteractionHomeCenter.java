@@ -22,51 +22,10 @@ public class InteractionHomeCenter extends JPanel {
     private void initComponents() {
         setLayout(new GridLayout(0, 1));
         add(ProgramDefaults.getCenterAlignedInteractionLabel(ProgramStrings.INTERACTION_HOME_BRIEF_DESCRIPTION));
-        add(getCheckList());
+        add(ProgramDefaults.getRaffleCheckList());
         add(getRaffleButton());
     }
 
-    /**
-     * Creates the "Check list" section of this panel. Will display what necessary steps the user
-     * has conducted to run their raffle.
-     * @return
-     */
-    private JPanel getCheckList() {
-        JPanel checklistPanel = ProgramDefaults.getBlankPanel();
-        checklistPanel.setLayout(new BorderLayout());
-        JLabel checkListLabel = ProgramDefaults.getCenterAlignedInteractionLabel(ProgramStrings.HOME_CHECKLIST_TITLE);
-        JLabel entriesImage, itemsImage, filterImage;
-        //Entries image.
-        if (RaffleDataStorage.hasEntriesFile())
-            entriesImage = new JLabel(ProgramDefaults.getCheckIcon());
-        else
-            entriesImage = new JLabel(ProgramDefaults.getXIcon());
-        if (RaffleDataStorage.hasItems())
-            itemsImage = new JLabel(ProgramDefaults.getCheckIcon());
-        else
-            itemsImage = new JLabel(ProgramDefaults.getXIcon());
-        if (RaffleDataStorage.hasFiltered())
-            filterImage = new JLabel(ProgramDefaults.getCheckIcon());
-        else
-            filterImage = new JLabel(ProgramDefaults.getXIcon());
-        entriesImage.setHorizontalAlignment(SwingConstants.CENTER);
-        itemsImage.setHorizontalAlignment(SwingConstants.CENTER);
-        filterImage.setHorizontalAlignment(SwingConstants.CENTER);
-        JLabel entriesText = ProgramDefaults.getLeftAlignedInteractionLabel(ProgramStrings.HOME_CHECKLIST_ENTRIES);
-        JLabel itemsText = ProgramDefaults.getLeftAlignedInteractionLabel(ProgramStrings.HOME_CHECKLIST_ITEMS);
-        JLabel filterText =  ProgramDefaults.getLeftAlignedInteractionLabel(ProgramStrings.HOME_CHECKLIST_FILTER);
-        JPanel checklistItemsContainer = ProgramDefaults.getBlankPanel();
-        checklistItemsContainer.setLayout(new GridLayout(0, 2));
-        checklistItemsContainer.add(entriesImage);
-        checklistItemsContainer.add(entriesText);
-        checklistItemsContainer.add(itemsImage);
-        checklistItemsContainer.add(itemsText);
-        checklistItemsContainer.add(filterImage);
-        checklistItemsContainer.add(filterText);
-        checklistPanel.add(checkListLabel, BorderLayout.NORTH);
-        checklistPanel.add(checklistItemsContainer, BorderLayout.CENTER);
-        return checklistPanel;
-    }
 
     private JPanel getRaffleButton() {
         JButton b = ProgramDefaults.getButton(ProgramStrings.HOME_RAFFLE_BUTTON);

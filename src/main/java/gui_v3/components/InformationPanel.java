@@ -15,8 +15,6 @@ public class InformationPanel extends DisplayPanel {
     /** The information of the filtering timer. */
     private FilteringInfo filteringInfo;
 
-    private NavigationLocations currentLocation;
-
     public InformationPanel() {
         super();
         initFilteringTimer();
@@ -60,7 +58,6 @@ public class InformationPanel extends DisplayPanel {
 
     @Override
     public void setHome() {
-        currentLocation = NavigationLocations.HOME;
         updateInformation(
             ProgramDefaults.getCenterAlignedInteractionLabel(ProgramStrings.HOME_INFORMATION_CONTACT_TITLE),
             ProgramDefaults.getCenterAlignedInteractionLabel(ProgramStrings.HOME_INFORMATION_CONTACT_EMAIL),
@@ -70,7 +67,6 @@ public class InformationPanel extends DisplayPanel {
 
     @Override
     public void setLoadEntries() {
-        currentLocation = NavigationLocations.ENTRIES;
         if (RaffleDataStorage.hasEntriesFile()) {
             JLabel status, entryCount, columnCount;
             status = ProgramDefaults.getCenterAlignedInteractionLabel(ProgramStrings.getUnderlinedHTMLString(ProgramStrings.ENTRIES_INFORMATION_FILE_STATUS_FILE_LOADED));
@@ -96,7 +92,6 @@ public class InformationPanel extends DisplayPanel {
 
     @Override
     public void setLoadItems_autoDetect_pt1() {
-        currentLocation = NavigationLocations.ITEMS_AUTO_DETECT_PT1;
         if (RaffleDataStorage.hasEntriesFile()) {
             updateInformation(
                     ProgramDefaults.getCenterAlignedInteractionLabel(ProgramStrings.ITEMS_AD_INFO_P1_PROMPT),
@@ -110,7 +105,6 @@ public class InformationPanel extends DisplayPanel {
 
     @Override
     public void setLoadItems_autoDetect_pt2() {
-        currentLocation = NavigationLocations.ITEMS_AUTO_DETECT_PT2;
         JLabel status;
         if (RaffleDataStorage.hasItemsFile())
             status = ProgramDefaults.getCenterAlignedInteractionLabel(ProgramStrings.getUnderlinedHTMLString(ProgramStrings.ITEMS_AD_INFO_P2_SAVED));
@@ -124,7 +118,6 @@ public class InformationPanel extends DisplayPanel {
 
     @Override
     public void setLoadItems_manual_pt1() {
-        currentLocation = NavigationLocations.ITEMS_MANUAL_PT1;
         JLabel status;
         if (RaffleDataStorage.hasItemsFile())
             status = ProgramDefaults.getCenterAlignedInteractionLabel(ProgramStrings.getUnderlinedHTMLString(ProgramStrings.ITEMS_MANUAL_FILE_LOADED));
@@ -138,7 +131,6 @@ public class InformationPanel extends DisplayPanel {
 
     @Override
     public void setLoadItems_manual_pt2() {
-        currentLocation = NavigationLocations.ITEMS_MANUAL_PT2;
         JLabel status;
         if (RaffleDataStorage.hasItems()) {
             status = ProgramDefaults.getCenterAlignedInteractionLabel(ProgramStrings.getUnderlinedHTMLString(ProgramStrings.ITEMS_MANUAL_SAVED));
@@ -153,7 +145,6 @@ public class InformationPanel extends DisplayPanel {
 
     public void updateDuplicateCount() {
         if (RaffleDataStorage.hasEntriesFile() && filteringInfo != null) {
-            System.out.println("Updating duplicate count.");
             filteringTimer.restart();
             filteringTimer.start();
         }
@@ -163,7 +154,6 @@ public class InformationPanel extends DisplayPanel {
     public void setRemoveDuplicates() {
         if (RaffleDataStorage.hasEntriesFile()) {
             filteringInfo = new FilteringInfo();
-            currentLocation = NavigationLocations.FILTER;
             JLabel originalCount = ProgramDefaults.getCenterAlignedInteractionLabel("" + filteringInfo.originalEntriesCount);
             JPanel ccp = ProgramDefaults.getBlankPanel(new BorderLayout());
             ccp.setBorder(getFilteringCountBorder(ProgramStrings.FILTER_INFO_CURRENT_COUNT));
@@ -186,7 +176,39 @@ public class InformationPanel extends DisplayPanel {
     }
 
     @Override
-    public void setRaffleWinners() {
+    public void setRunRaffleReview() {
+        if (RaffleDataStorage.hasEntriesFile() && RaffleDataStorage.hasItemsFile()) { //If raffle is ready to run :
+            removeAll();
+            setLayout(new GridLayout(0, 2));
+            filteringInfo = new FilteringInfo();
+            if (!RaffleDataStorage.hasFiltered()) { //Display no filter warning.
+
+            }
+            JPanel entriesDisplay = ProgramDefaults.getBlankPanel(new GridLayout(0, 2));
+            entriesDisplay.setBorder(getFilteringCountBorder(ProgramStrings.RAFFLE_REVIEW_ENTRIES_TITLE));
+            entriesDisplay.add(ProgramDefaults.getLeftAlignedInteractionLabel(ProgramStrings.RAFFLE_REVIEW_INFO_FILE));
+            entriesDisplay.add(ProgramDefaults.getLeftAlignedInteractionLabel(ProgramStrings.getFileName(RaffleDataStorage.getEntriesFileString())));
+            entriesDisplay.add(ProgramDefaults.getLeftAlignedInteractionLabel(ProgramStrings.RAFFLE_REVIEW_ENTRIES_COUNT));
+            entriesDisplay.add(filteringInfo.currentCountLabel);
+            JPanel itemsDisplay = ProgramDefaults.getBlankPanel(new GridLayout(0, 2));
+            itemsDisplay.setBorder(getFilteringCountBorder(ProgramStrings.RAFFLE_REVIEW_ITEMS_TITLE));
+            itemsDisplay.add(ProgramDefaults.getLeftAlignedInteractionLabel(ProgramStrings.RAFFLE_REVIEW_INFO_FILE));
+            if (RaffleDataStorage.usingAutodetect())
+                itemsDisplay.add(ProgramDefaults.getLeftAlignedInteractionLabel(RaffleDataStorage.getItemsFileString()));
+            else
+                itemsDisplay.add(ProgramDefaults.getLeftAlignedInteractionLabel(ProgramStrings.getFileName(RaffleDataStorage.getItemsFileString())));
+            itemsDisplay.add(ProgramDefaults.getLeftAlignedInteractionLabel(ProgramStrings.RAFFLE_REVIEW_ITEMS_COUNT));
+            itemsDisplay.add(ProgramDefaults.getCenterAlignedInteractionLabel(String.valueOf(RaffleDataStorage.getTotalNumItems())));
+            add(entriesDisplay);
+            add(itemsDisplay);
+        } else {
+            updateInformation(ProgramDefaults.getCenterAlignedInteractionLabel(ProgramStrings.RAFFLE_REVIEW_NOT_READY));
+        }
+    }
+
+
+    @Override
+    public void setRunRaffleWinners() {
 
     }
 
@@ -195,7 +217,7 @@ public class InformationPanel extends DisplayPanel {
     }
 
     /**
-     * Filtering info class. Helps with the animation of filtering information changes.
+     * Filtering info class. Helps with the animation of entries data information changes.
      */
     private class FilteringInfo {
 
