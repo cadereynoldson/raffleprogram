@@ -86,5 +86,16 @@ public class Row {
     public int getLength() {
         return row.size();
     }
-    
+
+    public Row deepCopy() {
+        Row r = new Row();
+        for (Particle p : row) {
+            r.add(p.deepCopy());
+        }
+        return r;
+    }
+
+    public void setValue(int index, Particle value) {
+
+    }
 }

@@ -6,7 +6,7 @@ public class Particle {
     private Object value;
     
     /**
-     * Creates a new particle. Tries to parse a float. If parsing fails,
+     * Creates a new particle. Tries to parse an integer and double. If parsing fails,
      * stores the value as a string. 
      * @param value the value to store. 
      */
@@ -44,5 +44,9 @@ public class Particle {
     @Override
     public String toString() {
         return value.toString();
+    }
+
+    public Particle deepCopy() {
+        return new Particle(this.toString());
     }
 }

@@ -264,7 +264,7 @@ public class ProgramStrings {
     public static final String RAFFLE_REVIEW_DESC_L2 = strToHTML("You can also manually select winners using the \"SET AS WINNER\" button when highlighting an entry.");
 
     public static final String RAFFLE_REVIEW_BRIEF_DESC = strToHTML("<center>Review the entries of your raffle." +
-            "<br/>Manually remove entries, or designate those special shop patrons as winners.</center>");
+            "<br/><br/>Manually remove entries, or designate those special shop patrons as winners.</center>");
 
     public static final String RAFFLE_REVIEW_NOT_READY = strToHTML("<center>You aren't ready to run your raffle." +
             "<br/>See the following checklist for what you're missing.</center>");
@@ -279,11 +279,43 @@ public class ProgramStrings {
 
     public static final String RAFFLE_REVIEW_ITEMS_TITLE = "Items Information";
 
-    public static final String RAFFLE_REVIEW_INFO_FILE = "File:";
+    public static final String RAFFLE_REVIEW_WINNERS_TITLE = "Winners Information";
+
+    public static final String RAFFLE_REVIEW_WINNERS_COUNT = "Total Winners:";
+
+    public static final String RAFFLE_REVIEW_ITEMS_DIST_BY = "Distribute By:";
 
     public static final String RAFFLE_REVIEW_ENTRIES_COUNT = "Total Entries:";
 
     public static final String RAFFLE_REVIEW_ITEMS_COUNT = "Total Items:";
+
+    public static final String RAFFLE_REMOVE_ENTRY_ERROR = "There has been a program error removing the selected entry.";
+
+    public static final String RAFFLE_SET_WINNER_ERROR = "There has been a program error setting this entry as a winner.";
+
+    public static final String RAFFLE_WINNERS_DESCRIPTION_TITLE = "Raffle Winners Description";
+
+    public static final String RAFFLE_WINNERS_DESCRIPTION_L1 = strToHTML("You made it! Here you can view the winners of your raffle.");
+
+    public static final String RAFFLE_WINNERS_DESCRIPTION_L2 = strToHTML("Pressing back will undo all of these generated and manually selected winners and put them back into the entries pool!");
+
+    public static final String RAFFLE_WINNERS_DESCRIPTION_L3 = strToHTML("Removing winners will automatically generate a new winner in their place.");
+
+    public static final String RAFFLE_WINNERS_DESCRIPTION_L4 = strToHTML("Be sure to save these winners for a hard copy of the data!");
+
+    public static final String RAFFLE_WINNERS_TITLE = "Raffle Winners";
+
+    public static final String RAFFLE_WINNERS_REMOVE_WINNER = "REMOVE WINNER";
+
+    public static final String RAFFLE_WINNERS_EXPORT_WINNER = "EXPORT WINNERS FILE";
+
+    public static final String RAFFLE_WINNERS_BRIEF_DESC =  strToHTML("<center>View the winners of your raffle." +
+            "<br/><br/>Navigate through the item categories using the drop down box(es).</center>");
+
+    public static final String RAFFLE_WINNERS_NO_WINNERS = strToHTML("<center>There are no winners of this type of item.<br/><br/>" +
+            "This is because you entered zero when entering the quantity of the item.</center>");
+
+    public static final String RAFFLE_WINNERS_BACK_DIALOGUE = "This will put the current winners of these items back into the entries pool!\nAre you sure you want to continue?";
 
     /* DIALOGUE STRINGS *************************************************************/
 
@@ -344,6 +376,7 @@ public class ProgramStrings {
     public static final String QUANTITY_COLUMN_NAME = "quantity";
 
     public static final String DIALOGUE_ERROR_TITLE = "Error";
+
 
     /**
      * Converts a string to HTML so lines can wrap within a JLabel.

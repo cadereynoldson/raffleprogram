@@ -13,4 +13,7 @@ public class PropertyChangeKeys {
     public static final String FILTER_ACTION = "FILTER_ACTION";
     public static final String REMOVE_ENTRY = "REMOVE_ENTRY_MANUAL";
     public static final String SET_AS_WINNER = "SET_AS_WINNER";
+    public static final String UNDO_RAFFLE = "UNDO_RAFFLE";
+    public static final String REMOVE_WINNER = "REMOVE_WINNER";
+    public static final String EXPORT_WINNERS = "EXPORT_WINNERS";
 }

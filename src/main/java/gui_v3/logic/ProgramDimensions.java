@@ -50,8 +50,15 @@ public class ProgramDimensions {
 
     public static final GridBagConstraints RAFFLE_REVIEW_BRIEF_DESC_CONSTRAINTS = getRaffleBriefDescConstraints();
 
+    public static final GridBagConstraints RAFFLE_WINNERS_BRIEF_DESC_CONSTRAINTS = getWinnersBriefDescConstraints();
+
+    public static final GridBagConstraints RAFFLE_WINNERS_TABLE_CONSTRAINTS = getRaffleWinnerTableConstraints();
+
+    public static final GridBagConstraints RAFFLE_WINNERS_BUTTON_PANEL_CONSTRAINTS = getRaffleWinnerButtonPanelConstraints();
+
     public static final GridBagConstraints RAFFLE_REVIEW_BUTTON_PANEL_CONSTRAINTS = getRaffleButtonConstraints();
 
+    public static final GridBagConstraints RAFFLE_COMBO_BOX_CONSTRAINTS = getRaffleComboBoxPanelConstraints();
 
     private static GridBagConstraints getGridBagConstraints(int gridx, int gridy, int gridwidth, int gridheight,
             Insets insets, double weightx, double weighty, int anchor, int fill) {
@@ -68,6 +75,22 @@ public class ProgramDimensions {
         return c;
     }
 
+    private static GridBagConstraints getWinnersBriefDescConstraints() {
+        return getGridBagConstraints(0, 0, 3, 1, DEFAULT_INSETS, 1, 0.2, GridBagConstraints.CENTER, GridBagConstraints.BOTH);
+    }
+
+    private static GridBagConstraints getRaffleComboBoxPanelConstraints() {
+        return getGridBagConstraints(0, 1, 3, 1, DEFAULT_INSETS, 1, 0.1, GridBagConstraints.PAGE_END, GridBagConstraints.HORIZONTAL);
+    }
+
+    private static GridBagConstraints getRaffleWinnerTableConstraints() {
+        return getGridBagConstraints(0, 2, 3, 1, DEFAULT_INSETS, 1, 0.5, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL);
+    }
+
+    private static GridBagConstraints getRaffleWinnerButtonPanelConstraints() {
+        return getGridBagConstraints(0, 3, 3, 1, DEFAULT_INSETS, 1, 0.2, GridBagConstraints.CENTER, GridBagConstraints.BOTH);
+    }
+
     private static GridBagConstraints getRaffleBriefDescConstraints() {
         return getGridBagConstraints(0, 0, 3, 1, DEFAULT_INSETS,
                 1, 0.3, GridBagConstraints.CENTER, GridBagConstraints.BOTH);
@@ -75,7 +98,7 @@ public class ProgramDimensions {
 
     private static GridBagConstraints getRaffleTableConstraints() {
         return getGridBagConstraints(0, 1, 3, 1, DEFAULT_INSETS,
-                1, 0.9, GridBagConstraints.CENTER, GridBagConstraints.BOTH);
+                1, 0.9, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL);
     }
 
     private static GridBagConstraints getRaffleButtonConstraints() {

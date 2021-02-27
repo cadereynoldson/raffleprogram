@@ -67,8 +67,10 @@ public class InteractionPanel extends DisplayPanel {
         if (centerPanel instanceof InteractionRunRaffleCenter) {
             ((InteractionRunRaffleCenter) centerPanel).setLocationDisplayed(newLocation);
             title.setText(newTitle);
+            System.out.println("UPDATING RUN RAFFLE SPOT:");
             revalidate();
             repaint();
+
         } else {
             resetComponents(newTitle, new InteractionRunRaffleCenter(pcs, newLocation));
         }
@@ -110,13 +112,13 @@ public class InteractionPanel extends DisplayPanel {
     }
 
     @Override
-    void setRunRaffleReview() {
+    public void setRunRaffleReview() {
         updateRunRaffleComponents(ProgramStrings.RAFFLE_REVIEW_TITLE, NavigationLocations.RUN_RAFFLE_REVIEW);
     }
 
 
     @Override
-    void setRunRaffleWinners() {
-
+    public void setRunRaffleWinners() {
+        updateRunRaffleComponents(ProgramStrings.RAFFLE_WINNERS_TITLE, NavigationLocations.RUN_RAFFLE_SHOW_WINNERS);
     }
 }

@@ -15,6 +15,8 @@ public class InformationPanel extends DisplayPanel {
     /** The information of the filtering timer. */
     private FilteringInfo filteringInfo;
 
+    private RafflePreviewInfo rafflePreviewInfo;
+
     public InformationPanel() {
         super();
         initFilteringTimer();
@@ -175,45 +177,70 @@ public class InformationPanel extends DisplayPanel {
         }
     }
 
+
     @Override
     public void setRunRaffleReview() {
         if (RaffleDataStorage.hasEntriesFile() && RaffleDataStorage.hasItemsFile()) { //If raffle is ready to run :
             removeAll();
-            setLayout(new GridLayout(0, 2));
-            filteringInfo = new FilteringInfo();
-            if (!RaffleDataStorage.hasFiltered()) { //Display no filter warning.
-
-            }
+            setLayout(new GridLayout(0, 3));
+            System.out.println("HERE");
+            rafflePreviewInfo = new RafflePreviewInfo();
+            //Entries info:
             JPanel entriesDisplay = ProgramDefaults.getBlankPanel(new GridLayout(0, 2));
             entriesDisplay.setBorder(getFilteringCountBorder(ProgramStrings.RAFFLE_REVIEW_ENTRIES_TITLE));
-            entriesDisplay.add(ProgramDefaults.getLeftAlignedInteractionLabel(ProgramStrings.RAFFLE_REVIEW_INFO_FILE));
-            entriesDisplay.add(ProgramDefaults.getLeftAlignedInteractionLabel(ProgramStrings.getFileName(RaffleDataStorage.getEntriesFileString())));
-            entriesDisplay.add(ProgramDefaults.getLeftAlignedInteractionLabel(ProgramStrings.RAFFLE_REVIEW_ENTRIES_COUNT));
-            entriesDisplay.add(filteringInfo.currentCountLabel);
+            entriesDisplay.add(ProgramDefaults.getRightAlignedInteractionLabel(ProgramStrings.RAFFLE_REVIEW_ENTRIES_COUNT));
+            entriesDisplay.add(rafflePreviewInfo.entriesLabel);
+            //Items Info
             JPanel itemsDisplay = ProgramDefaults.getBlankPanel(new GridLayout(0, 2));
             itemsDisplay.setBorder(getFilteringCountBorder(ProgramStrings.RAFFLE_REVIEW_ITEMS_TITLE));
-            itemsDisplay.add(ProgramDefaults.getLeftAlignedInteractionLabel(ProgramStrings.RAFFLE_REVIEW_INFO_FILE));
-            if (RaffleDataStorage.usingAutodetect())
-                itemsDisplay.add(ProgramDefaults.getLeftAlignedInteractionLabel(RaffleDataStorage.getItemsFileString()));
-            else
-                itemsDisplay.add(ProgramDefaults.getLeftAlignedInteractionLabel(ProgramStrings.getFileName(RaffleDataStorage.getItemsFileString())));
-            itemsDisplay.add(ProgramDefaults.getLeftAlignedInteractionLabel(ProgramStrings.RAFFLE_REVIEW_ITEMS_COUNT));
-            itemsDisplay.add(ProgramDefaults.getCenterAlignedInteractionLabel(String.valueOf(RaffleDataStorage.getTotalNumItems())));
+            itemsDisplay.add(ProgramDefaults.getRightAlignedInteractionLabel(ProgramStrings.RAFFLE_REVIEW_ITEMS_COUNT));
+            itemsDisplay.add(rafflePreviewInfo.itemsLabel);
+            itemsDisplay.add(ProgramDefaults.getRightAlignedInteractionLabel(ProgramStrings.RAFFLE_REVIEW_ITEMS_DIST_BY));
+            itemsDisplay.add(ProgramDefaults.getCenterAlignedInteractionLabel(RaffleDataStorage.getDistributionValuesString()));
+            //Winner info
+            JPanel winnersDisplay = ProgramDefaults.getBlankPanel(new GridLayout(0, 2));
+            winnersDisplay.setBorder(getFilteringCountBorder(ProgramStrings.RAFFLE_REVIEW_WINNERS_TITLE));
+            winnersDisplay.add(ProgramDefaults.getRightAlignedInteractionLabel(ProgramStrings.RAFFLE_REVIEW_WINNERS_COUNT));
+            winnersDisplay.add(rafflePreviewInfo.winnersLabel);
             add(entriesDisplay);
             add(itemsDisplay);
+            add(winnersDisplay);
         } else {
             updateInformation(ProgramDefaults.getCenterAlignedInteractionLabel(ProgramStrings.RAFFLE_REVIEW_NOT_READY));
         }
     }
 
+    public void updateRafflePreview() {
+        rafflePreviewInfo.entriesLabel.setText(String.valueOf(RaffleDataStorage.getCurrentEntriesSheet().getNumRows()));
+        rafflePreviewInfo.itemsLabel.setText(String.valueOf(RaffleDataStorage.getTotalNumItems()));
+        rafflePreviewInfo.winnersLabel.setText(String.valueOf(RaffleDataStorage.getTotalNumWinners()));
+    }
 
     @Override
     public void setRunRaffleWinners() {
-
+        updateInformation(ProgramDefaults.getCenterAlignedInteractionLabel("Saved a hard copy of raffle winners: " + RaffleDataStorage.hasWrittenToFile()));
     }
 
     private Border getFilteringCountBorder(String title) {
         return BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(), title, TitledBorder.CENTER, TitledBorder.BELOW_TOP, ProgramFonts.DEFAULT_FONT_LARGE);
+    }
+
+    private class RafflePreviewInfo {
+
+        private JLabel entriesLabel;
+
+        private JLabel itemsLabel;
+
+        private JLabel winnersLabel;
+
+        public RafflePreviewInfo() {
+            int entriesCount = RaffleDataStorage.getCurrentEntriesSheet().getNumRows();
+            int itemsCount = RaffleDataStorage.getTotalNumItems();
+            int winnersCount = RaffleDataStorage.getTotalNumWinners();
+            entriesLabel = ProgramDefaults.getCenterAlignedInteractionLabel(String.valueOf(entriesCount));
+            itemsLabel = ProgramDefaults.getCenterAlignedInteractionLabel(String.valueOf(itemsCount));
+            winnersLabel = ProgramDefaults.getCenterAlignedInteractionLabel(String.valueOf(winnersCount));
+        }
     }
 
     /**
@@ -243,7 +270,7 @@ public class InformationPanel extends DisplayPanel {
                 currentCountLabel = ProgramDefaults.getCenterAlignedInteractionLabel("" + RaffleDataStorage.getCurrentEntriesSheet().getNumRows());
                 removedCountLabel = ProgramDefaults.getCenterAlignedInteractionLabel("" + currentRemovedValue);
             } else {
-                throw new IllegalArgumentException("No filtering info can be captured as there is nolpopo entries file loaded.");
+                throw new IllegalArgumentException("No filtering info can be captured as there is no entries file loaded.");
             }
         }
     }

@@ -192,7 +192,7 @@ public class InteractionItemsCenter extends JPanel {
 
     public void setAutoDetect_P2() {
         if (!RaffleDataStorage.hasDistributionValues()) {
-            //TODO: Do error handling for setting this page. Jeez you really fucked up if this is where you got to.
+        //TODO: Do error handling for setting this page. Jeez you really fucked up if this is where you got to.
         } else { //If there are selected auto detect values
             ((Runnable) () -> { //Compute calculation on separate thread.
                 SpreadSheet s;

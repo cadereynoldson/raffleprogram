@@ -1,9 +1,6 @@
 package gui_v3.logic;
 
-import main_structure.Column;
-import main_structure.Row;
-import main_structure.RowWrapper;
-import main_structure.SpreadSheet;
+import main_structure.*;
 
 import java.io.File;
 import java.util.*;
@@ -14,8 +11,7 @@ import java.util.*;
  */
 public class RaffleDataStorage {
 
-    /** The file dump the winners into. */
-    private static File outputFile = new File(System.getProperty("user.dir"));
+    private static boolean hasWrittenToFile = false;
 
     /** The display string of the entries sheet. */
     private static String entriesSheetFileDisplay;
@@ -45,24 +41,38 @@ public class RaffleDataStorage {
      */
     private static final PriorityQueue<Integer> indexesToRemove = initIndexesQueue();
 
-    /** Each item to raffle (Row) mapped to a spreadsheet of entries for that item (SpreadSheet) */
+    /**
+     * Each item to raffle (Row) mapped to a spreadsheet of entries for that item (SpreadSheet)
+     * NOTE: THESE ITEMS CAN BE ALTERED AS THEY ARE DEEP COPIES OF THE ORIGINAL ITEMS DATASET!
+     */
     private static final HashMap<RowWrapper, SpreadSheet> groupedSheets = new HashMap<>();
 
-    /** Created when running the raffle. Each item raffled is mapped to a spreadsheet of winners of that item. */
+    /**
+     * Created when running the raffle. Each item raffled is mapped to a spreadsheet of winners of that item.
+     * NOTE: THESE ITEMS CAN BE ALTERED AS THEY ARE DEEP COPIES OF THE ORIGINAL ITEMS DATASET!
+     */
     private static final HashMap<RowWrapper, SpreadSheet> winners = new HashMap<>();
 
     /** A data structure of indexes mapped based on the row. This Integer corresponds to the row's position in the groupedSheets data structure. */
     private static final HashMap<Row, Integer> rowToGroupedSheetIndex = new HashMap<>();
 
+    /** A data structure of indexes mapped based on the row. This Integer corresponds to the row's position in the winners data structure. */
     private static final HashMap<Row, Integer> rowToWinnerIndex = new HashMap<>();
 
-    /** The most recently manipulated spreadsheet. */
+    /** A data structure of indexes mapped based on the row. This Integer corresponds to the row's position in the current entries data structure. */
+    private static final HashMap<Row, Integer> rowToCurrentEntriesIndex = new HashMap<>();
+
+    /** The most recently manipulated spreadsheet.
+     * NOTE:
+     * - THIS IS USED AS A REFERENCE FOR FILTERING.
+     * - ANY UPDATES TO THIS SHEET FROM THE RUN RAFFLE PAGE SHOULD BE DONE WITH THE METHOD convertRunRaffleToCurrentEntries()
+     */
     private static SpreadSheet currentEntriesSheet;
 
     /** The originally loaded entries sheet. */
     private static SpreadSheet originalEntriesSheet;
 
-    /** The spreadsheet containing the items to raffle. */
+    /** The spreadsheet containing the items to raffle. This is NOT to be altered after initialization! */
     private static SpreadSheet itemsSheet;
 
     /** The index of count column of the items spreadsheet. Default is one.*/
@@ -263,6 +273,38 @@ public class RaffleDataStorage {
         selectedDistributionValues.clear();
     }
 
+    public static String getDistributionValuesString() {
+        String s = "";
+        for (int i = 0; i < selectedDistributionValues.size(); i++) {
+            if (i != selectedDistributionValues.size() - 1) {
+                s += selectedDistributionValues.get(i) + ", ";
+            } else {
+                s += selectedDistributionValues.get(i);
+            }
+        }
+        return s;
+    }
+
+    public static void removeWinner(HashMap<String, Particle> itemIdentifiers, int indexToRemove, boolean generateNewWinner) {
+        HashMap<String, Object> converted = new HashMap<>();
+        for (String s : itemIdentifiers.keySet())
+            converted.put(s, itemIdentifiers.get(s).getValue());
+        RowWrapper r = getCorrespondingRowWrapper(converted, winners);
+        if (r != null) {
+            if (winners.get(r).getNumRows() > indexToRemove && indexToRemove >= 0)
+                winners.get(r).removeRow(indexToRemove);
+            r.getValue(countColumn).setValue(String.valueOf((Integer) r.getValue(countColumn).getValue() + 1));
+            if (generateNewWinner) {
+                SpreadSheet newWinners = groupedSheets.get(r).raffleItem((Integer) r.getValue(countColumn).getValue());
+                for (int i = 0; i < newWinners.getNumRows(); i++)
+                    winners.get(r).addRow(newWinners.getRow(i));
+                r.getValue(countColumn).setValue(String.valueOf(0));
+            }
+        } else {
+            //TODO: Display error.
+        }
+    }
+
     public static boolean usingAutodetect() { return autoDetect; }
 
     /**
@@ -399,52 +441,162 @@ public class RaffleDataStorage {
         return new HashSet<>(chosenFilters);
     }
 
+    public static boolean hasWinners() {
+        return !winners.isEmpty();
+    }
+
     /**
      * Removes an entry from the current raffle given an index of the current raffle.
      * @param index the index of the entry to remove from the current entries sheet.
      */
     public static void removeEntry(int index) throws IllegalArgumentException {
-        RowWrapper r = assureKeyExists(index);
-        executeRemoval(r, index);
-    }
-
-    public static void setAsWinner(int index) throws IllegalArgumentException {
-        RowWrapper item = assureKeyExists(index);
-        if (item.getValue(countColumn).getValue() instanceof Integer) {
-            int count = (Integer) item.getValue(countColumn).getValue();
-            if (count == 0)
-                throw new IllegalArgumentException("You have zero left of this item to raffle:\n" + item.toString());
-            System.out.println("ERROR CHECKING COMPLETED -- TODO: SET AS WINNER");
-        } else {
-            throw new IllegalArgumentException("There has been an error with the underlying data structure. (COUNT COLUMN NOT INTEGER).\nContact the developer of the program if this problem persists.");
-        }
-        Row winner = currentEntriesSheet.getRow(index);
-        winners.get(item).addRow(winner);
-    }
-
-
-    private static void decrementItemCount(RowWrapper item) {
-
-    }
-
-    /**
-     * Will remove an entry from the current entries dataset alongside its entry within the grouped entries data structure. Performs no checking for valid inputs.
-     * @param groupKey the key of the group this entry belongs to.
-     * @param index the index of the row to remove. This is the row contained in the CURRENT ENTRIES SHEET DATASET!
-     */
-    private static void executeRemoval(RowWrapper groupKey, int index) {
-        Row r = currentEntriesSheet.removeRow(index);
-        groupedSheets.get(groupKey).removeRow(rowToGroupedSheetIndex.get(r));
+        Row entry = currentEntriesSheet.removeRow(index);
+        RowWrapper r = getCorrespondingRowWrapper(getDistributionValues(currentEntriesSheet, index), groupedSheets);
+        removeFromGroupStructure(r, entry);
         resetFinalStructureIndexes();
     }
 
     /**
-     *
-     * @param index
-     * @return
-     * @throws IllegalArgumentException
+     * Runs the raffle. Appends all of the winners generated on top of the winners already contained in the dataset.
      */
-    private static RowWrapper assureKeyExists(int index) throws IllegalArgumentException {
+    public static void runRaffle() {
+        for (RowWrapper r : groupedSheets.keySet()) {
+            try {
+                SpreadSheet s = groupedSheets.get(r);
+                int count = (Integer) r.getValue(countColumn).getValue(); //This count of random numbers.
+                Random generator = new Random();
+                for (int i = 0; i < count; i++) {
+                    int winnerIndex = generator.nextInt(s.getNumRows());
+                    Row winner = s.getRow(winnerIndex);
+                    RowWrapper item = getCorrespondingRowWrapper(getDistributionValues(s, winnerIndex), groupedSheets);
+                    setAsWinner(item, winner);
+                    removeFromGroupStructure(item, winner);
+                    resetFinalStructureIndexes();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new IllegalArgumentException("Error in raffling. Count column is not an integer.");
+            }
+        }
+    }
+
+    /**
+     * Undoes the run raffle process. Removes all winners and groups them back into the items they were raffled for.
+     */
+    public static void undoRunRaffle() {
+        for (RowWrapper item: winners.keySet()) { //For all of the winner items :
+            SpreadSheet current = winners.get(item);
+            int winnersOfItem = current.getNumRows();
+            for (int i = 0; i < current.getNumRows(); i++) { //Add the winners back into the group they entered for.
+                groupedSheets.get(item).addRow(current.getRow(i));
+            }
+            current.removeAllRows();
+            item.getValue(countColumn).setValue(String.valueOf(winnersOfItem));
+        }
+        convertRunRaffleToCurrentEntries();
+    }
+
+    public static void manualSetAsWinner(int index) {
+        RowWrapper item = assureKeyValid(index);
+        if (item.getValue(countColumn).getValue() instanceof Integer) {
+            int count = (Integer) item.getValue(countColumn).getValue();
+            if (count == 0)
+                throw new IllegalArgumentException("You have zero left of this item to raffle:\n" + item.getItemString(countColumn));
+            Row winner = currentEntriesSheet.removeRow(index);
+            setAsWinner(item, winner);
+            removeFromGroupStructure(item, winner);
+            resetFinalStructureIndexes();
+        }
+    }
+
+    /**
+     * Given a row wrapper of an item and a row, it sets the row as a winner of the item.
+     * @param item the item this winner is to belong to.
+     * @param r the row (entry) to add as a winner.
+     */
+    private static void setAsWinner(RowWrapper item, Row r) {
+        winners.get(item).addRow(r);
+        int value = (Integer) item.getValue(countColumn).getValue();
+        item.getValue(countColumn).setValue(String.valueOf(value - 1));
+    }
+
+    /**
+     * Removes an entry from the group structure. NOTE: This does NOT reset the final structure indexes!
+     * @param item the item this row is grouped with.
+     * @param r the row to remove.
+     */
+    private static void removeFromGroupStructure(RowWrapper item, Row r) {
+        System.out.println("GROUPED SHEETS: " + (groupedSheets.get(item) == null) + " - ROW TO GROUPED SHEETS: " + (rowToGroupedSheetIndex.get(r) == null));
+        groupedSheets.get(item).removeRow(rowToGroupedSheetIndex.get(r));
+    }
+
+    /**
+     * Returns a total count of winners in the raffle.
+     * @return a total count of winners in the raffle.
+     */
+    public static int getTotalNumWinners() {
+        int count = 0;
+        for (RowWrapper item : winners.keySet())
+            count += winners.get(item).getNumRows();
+        return count;
+    }
+
+    /**
+     * Returns the list of distribution values (column names) the raffle is going to be ran based on.
+     * @return the list of distribution values the raffle is going to be ran based on.
+     */
+    public static List<String> getDistributionValuesList() {
+        return selectedDistributionValues;
+    }
+
+    /**
+     * Returns the winners of an item given it's identifying (distribution) values (excluding count).
+     * @param values the values of the identifying item.
+     * @return the winners of an item given the items identifying (distribution) values.
+     */
+    public static SpreadSheet getWinners(HashMap<String, Particle> values) {
+        for (RowWrapper r : winners.keySet()) { //Brute force search through the winners for the spreadsheet identical to the values.
+            int counter = 0;
+            SpreadSheet current = winners.get(r);
+            for (String colName : values.keySet()) {
+                Object rowValue = r.getValue(colName).getValue();
+                Object displayValue = values.get(colName).getValue();
+                if (rowValue == null || !rowValue.equals(displayValue)) //If there is no value contained under the current column name or values are not equal, break.
+                    break;
+                else //else increment the counter.
+                    counter++;
+            }
+            //Check if we found the winners spreadsheet.
+            if (counter == values.size()) { //Counter equals the size of the values set -> found the correct spreadsheet.
+                return current;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Converts a column of the current items sheet to a string array.
+     * @param columnName the name of the column to find a
+     * @return
+     */
+    public static String[] getItemValues(String columnName) throws IllegalArgumentException {
+        Column c = itemsSheet.getColumn(columnName);
+        if (c == null) {
+            throw new IllegalArgumentException("There has been an error fetching the values of the column: " + columnName);
+        }
+        String[] values = new String[c.getLength()];
+        for (int i = 0; i < c.getLength(); i++)
+            values[i] = c.get(i).toString();
+        return values;
+    }
+
+    /**
+     * Assures a key is valid for a given entries index of the current entries sheet. Ensures this entry can be properly selected as a winner.
+     * @param index the index of the entry in the current entries sheet.
+     * @return a rowwrapper of the group key this entry belongs to.
+     * @throws IllegalArgumentException If there is no group key, winners key, or the two generated keys are not equal.
+     */
+    private static RowWrapper assureKeyValid(int index) throws IllegalArgumentException {
         HashMap<String, Object> distributionValues = getDistributionValues(currentEntriesSheet, index);
         RowWrapper groupKey = getCorrespondingRowWrapper(distributionValues, groupedSheets);
         RowWrapper winnerKey = getCorrespondingRowWrapper(distributionValues, winners);
@@ -488,7 +640,8 @@ public class RaffleDataStorage {
             SpreadSheet itemWinners = new SpreadSheet();
             entries.initColumns(currentEntriesSheet.getColumnNames());
             itemWinners.initColumns(currentEntriesSheet.getColumnNames());
-            RowWrapper itemWrapper = new RowWrapper(itemsSheet.getRow(i), itemsSheet.getColumnNames());
+            Row itemRow = itemsSheet.getRow(i);
+            RowWrapper itemWrapper = new RowWrapper(itemRow, itemsSheet.getColumnNames());
             groupedSheets.put(itemWrapper, entries);
             winners.put(itemWrapper, itemWinners);
         }
@@ -499,8 +652,10 @@ public class RaffleDataStorage {
                 groupedSheets.get(r).addRow(currentEntriesSheet.getRow(i));
             }
         }
+        convertRunRaffleToCurrentEntries(); //Convert the table to display to the table for
         resetFinalStructureIndexes();
     }
+
 
     /**
      * Allows the fetching of a RowWrapper key from one of the final structures (groupedSheets or winners).
@@ -553,5 +708,37 @@ public class RaffleDataStorage {
         return count;
     }
 
+    /**
+     * Converts the current entries (rows) in the grouped entries data structure to the current entries sheet.
+     * This is the current workaround for indexing problems involving removing raffle entries and setting winners from raffle groups.
+     */
+    private static void convertRunRaffleToCurrentEntries() {
+        currentEntriesSheet = new SpreadSheet();
+        currentEntriesSheet.initColumns(originalEntriesSheet.getColumnNames());
+        for (RowWrapper r : groupedSheets.keySet()) {
+            SpreadSheet group = groupedSheets.get(r);
+            for (int i = 0; i < group.getNumRows(); i++)
+                currentEntriesSheet.addRow(group.getRow(i));
+        }
+        resetFinalStructureIndexes();
+    }
 
+    public static SpreadSheet getCombinedWinnersSheet() {
+        SpreadSheet s = new SpreadSheet();
+        s.initColumns(currentEntriesSheet.getColumnNames());
+        for (RowWrapper r : winners.keySet()) {
+            SpreadSheet currentWinners = winners.get(r);
+            for (int i = 0; i < currentWinners.getNumRows(); i++)
+                s.addRow(currentWinners.getRow(i));
+        }
+        return s;
+    }
+
+    public static void setWrittenToFile(boolean value) {
+        hasWrittenToFile = value;
+    }
+
+    public static boolean hasWrittenToFile() {
+        return hasWrittenToFile;
+    }
 }

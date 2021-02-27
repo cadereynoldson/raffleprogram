@@ -119,11 +119,29 @@ public class SpreadSheet {
         return mapping;
     }
 
+    /**
+     * Removes all of the rows of the spreadsheet.
+     */
+    public void removeAllRows() {
+        rows.clear();
+        columns.clear();
+    }
+
+    /**
+     * Returns the count of unique values of a column at a specified index.
+     * @param index the index to calculate the unique value count of.
+     * @return the count of unique values of a column at the specified index.
+     */
     public int getUniqueValueCounts(int index) {
         Column c = columns.get(index);
         return c.getUniqueValues().size();
     }
 
+    /**
+     * Returns the count of unique values of a column at the specified column name.
+     * @param columnName the column name to calculate the count of unique values at.
+     * @return the count of unique values of a column with the parameterized column name.
+     */
     public int getUniqueValueCounts(String columnName) {
         int columnIndex = getColumnIndex(columnName);
         if (columnIndex == -1)
@@ -289,7 +307,7 @@ public class SpreadSheet {
     }
     
     /**
-     * Writes this spreadsheet to a file with a ".txt" extension. 
+     * Writes this spreadsheet to a file with a ".csv" extension.
      * @param name the name of the new file. 
      * @param unique the unique identifier of the file. 
      * @param folderPath the folder path to write to. 
@@ -297,11 +315,21 @@ public class SpreadSheet {
      */
     public boolean writeToFile(String name, String unique, String folderPath) {
         String fileName = folderPath + "\\" + name + "_" + unique + "_winners";
-        File f = new File(fileName + ".txt");
+        return writeToFile(fileName, folderPath);
+    }
+
+    /**
+     * Writes this spreadsheet to a file with a ".csv" extension.
+     * @param fileName the name of the file.
+     * @param folderPath the folder path to write to.
+     * @return true if the file has successfully been written to, false otherwise.
+     */
+    public boolean writeToFile(String fileName, String folderPath) {
+        File f = new File(fileName + ".csv");
         try {
-            int counter = 1; 
-            while (!f.createNewFile()) //while file cannot be created. 
-                f = new File(fileName + "(" + counter++ + ").txt");
+            int counter = 1;
+            while (!f.createNewFile()) //while file cannot be created.
+                f = new File(fileName + "(" + counter++ + ").csv");
             FileWriter w = new FileWriter(f);
             String[] names = getColumnNames();
             for (int i = 0; i < names.length; i++)
@@ -311,11 +339,10 @@ public class SpreadSheet {
                 w.append(r.toString() + ", \n");
             }
             w.close();
-            return true; 
+            return true;
         } catch (IOException e) {
-            return false; 
+            return false;
         }
-        
     }
     
     /**
@@ -325,8 +352,12 @@ public class SpreadSheet {
     public ArrayList<Row> getRows() {
         return rows; 
     }
-    
-    
+
+    /**
+     * Testing main function.
+     * @param args
+     * @throws IOException
+     */
     public static void main(String[] args) throws IOException {
         SpreadSheet ss = SpreadSheet.readCSV("testFiles/mock_entries_colors.csv");
         SpreadSheet newSheet = ss.getBlankSpreadSheet();

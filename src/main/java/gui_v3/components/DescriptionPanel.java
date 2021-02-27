@@ -141,7 +141,10 @@ public class DescriptionPanel extends DisplayPanel {
 
     @Override
     void setRunRaffleWinners() {
-
+        refreshDisplay(ProgramStrings.RAFFLE_WINNERS_DESCRIPTION_TITLE,
+                ProgramDefaults.getDescriptionLabel(ProgramStrings.RAFFLE_WINNERS_DESCRIPTION_L1),
+                ProgramDefaults.getDescriptionLabel(ProgramStrings.RAFFLE_WINNERS_DESCRIPTION_L2),
+                ProgramDefaults.getDescriptionLabel(ProgramStrings.RAFFLE_WINNERS_DESCRIPTION_L3),
+                ProgramDefaults.getDescriptionLabel(ProgramStrings.RAFFLE_WINNERS_DESCRIPTION_L4));
     }
-
 }

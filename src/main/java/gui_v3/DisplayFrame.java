@@ -2,11 +2,18 @@ package gui_v3;
 
 import gui_v3.components.*;
 import gui_v3.logic.*;
+import main_structure.Particle;
+import main_structure.SpreadSheet;
 
 import javax.swing.*;
 import javax.swing.plaf.BorderUIResource;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.beans.PropertyChangeEvent;
+import java.io.File;
+import java.util.HashMap;
 
 /**
  * Display Frame. Acts as the main JFrame for displaying the application.
@@ -43,7 +50,18 @@ public class DisplayFrame extends JFrame {
     }
 
     private void initComponents() {
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        WindowListener exitListener = new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                int confirm = 0;
+                if (RaffleDataStorage.hasWinners() && !RaffleDataStorage.hasWrittenToFile()) //Show warning that they haven't saved winners.
+                    confirm = ProgramDefaults.displayYesNoConfirm("You haven't saved your generated raffle winners!\nAre you sure you want to exit?", "Warning", null);
+                if (confirm == 0)
+                    System.exit(0);
+            }
+        };
+        addWindowListener(exitListener);
         getContentPane().setBackground(ProgramColors.BACKGROUND_COLOR);
         setSize(ProgramDimensions.DEFAULT_SCREEN_SIZE);
         descriptionPanel = new DescriptionPanel();
@@ -93,6 +111,13 @@ public class DisplayFrame extends JFrame {
             raffleRemoveEntry((Integer) propertyChangeEvent.getNewValue());
         } else if (propertyValue.equals(PropertyChangeKeys.SET_AS_WINNER)) {
             raffleSetAsWinner((Integer) propertyChangeEvent.getNewValue());
+        } else if (propertyValue.equals(PropertyChangeKeys.UNDO_RAFFLE)) {
+            undoRaffle();
+        } else if (propertyValue.equals(PropertyChangeKeys.REMOVE_WINNER)) {
+            if (propertyChangeEvent.getNewValue() instanceof Integer && propertyChangeEvent.getOldValue() instanceof HashMap)
+                    removeWinner((HashMap<String, Particle>) propertyChangeEvent.getOldValue(), (Integer) propertyChangeEvent.getNewValue());
+        } else if (propertyValue.equals(PropertyChangeKeys.EXPORT_WINNERS)) {
+            exportWinners();
         }
         revalidate();
         repaint();
@@ -132,11 +157,7 @@ public class DisplayFrame extends JFrame {
                     != JOptionPane.OK_OPTION) //If the user selects anything other than ok, cancel navigation.
                     return;
             }
-            if (currentLocation == NavigationLocations.RUN_RAFFLE_REVIEW) { //If navigating away from the run raffle review panel, save all changes.
-                //TODO: SAVE OR REMOVE CHANGES!
-            }
             currentLocation = (NavigationLocations) propertyChangeEvent.getNewValue();
-//            System.out.println("TAB NAV EVENT -- " + currentLocation);
             tabs.changeNavLocation(currentLocation);
             if (currentLocation == NavigationLocations.ITEMS)  //If using the items tab - navigate using the last items location recorded.
                 currentLocation = lastItemLocation;
@@ -164,12 +185,50 @@ public class DisplayFrame extends JFrame {
                         != JOptionPane.OK_OPTION)
                     return;
             }
-
+            if (currentLocation == NavigationLocations.HOME) { // Navigate to the run raffle page if clicking from home. Allows the user to double check their raffle information.
+                tabs.changeNavLocation(NavigationLocations.RUN_RAFFLE);
+            } else { //Otherwise, we are on run raffle panel, run the raffle.
+                RaffleDataStorage.runRaffle();
+                lastRunRaffleLocation = NavigationLocations.RUN_RAFFLE_SHOW_WINNERS;
+            }
+            currentLocation = lastRunRaffleLocation;
+            updateContents();
         } else {
             ProgramDefaults.displayError(ProgramStrings.DIALOGUE_RAFFLE_NOT_READY, ProgramStrings.DIALOGUE_RAFFLE_NOT_READY_TITLE, this);
         }
     }
 
+    private void undoRaffle() {
+        int action = ProgramDefaults.displayYesNoConfirm(ProgramStrings.RAFFLE_WINNERS_BACK_DIALOGUE, "Warning", this);
+        if (action == JOptionPane.YES_OPTION) {
+            RaffleDataStorage.undoRunRaffle();
+            lastRunRaffleLocation = NavigationLocations.RUN_RAFFLE_REVIEW;
+            currentLocation = lastRunRaffleLocation;
+            updateContents();
+        }
+    }
+
+    /**
+     * Removes a winner of the dataset and automatically generates a new winner.
+     * @param itemIdentifiers a hashmap of column names to particle values of the item to display.
+     * @param indexToRemove the index of the contained spreadsheet to remove.
+     */
+    private void removeWinner(HashMap<String, Particle> itemIdentifiers, int indexToRemove) {
+        RaffleDataStorage.removeWinner(itemIdentifiers, indexToRemove, true);
+        if (currentLocation == NavigationLocations.RUN_RAFFLE_SHOW_WINNERS) {
+            ((InteractionRunRaffleCenter) interactionPanel.getCenterPanel()).updateDisplayedWinnersTable();
+            revalidate();
+            repaint();
+        } else {
+            lastRunRaffleLocation = NavigationLocations.RUN_RAFFLE_SHOW_WINNERS;
+            currentLocation = lastRunRaffleLocation;
+            updateContents();
+        }
+    }
+
+    /**
+     * Handles navigation to the load entries panel.
+     */
     private void loadEntries() {
         if (RaffleDataStorage.hasItemsFile() || RaffleDataStorage.hasEntriesFile()) { //Display a warning that this will reset all progress in raffle.
             int promptValue = ProgramDefaults.displayYesNoConfirm(ProgramStrings.DIALOGUE_LOAD_WARNING, ProgramStrings.DIALOGUE_LOAD_WARNING_TITLE, this);
@@ -259,10 +318,12 @@ public class DisplayFrame extends JFrame {
     private void raffleRemoveEntry(int index) {
         try {
             RaffleDataStorage.removeEntry(index);
-            if (interactionPanel.getCenterPanel() instanceof InteractionRunRaffleCenter)
+            if (interactionPanel.getCenterPanel() instanceof InteractionRunRaffleCenter) {
                 ((InteractionRunRaffleCenter) interactionPanel.getCenterPanel()).removeFromTable(index);
-            //TODO: UPDATE ALL PANELS!
+                informationPanel.updateRafflePreview();
+            }
         }  catch (IllegalArgumentException e) {
+            e.printStackTrace();
             ProgramDefaults.displayError(e.getMessage(), ProgramStrings.DIALOGUE_ERROR_TITLE, this);
         }
 
@@ -270,15 +331,36 @@ public class DisplayFrame extends JFrame {
 
     private void raffleSetAsWinner(int index) {
         try {
-            RaffleDataStorage.setAsWinner(index);
-            if (interactionPanel.getCenterPanel() instanceof InteractionRunRaffleCenter)
+            RaffleDataStorage.manualSetAsWinner(index);
+            if (interactionPanel.getCenterPanel() instanceof InteractionRunRaffleCenter) {
                 ((InteractionRunRaffleCenter) interactionPanel.getCenterPanel()).removeFromTable(index);
-            //TODO: UPDATE ALL PANELS!
+                informationPanel.updateRafflePreview();
+            }
         } catch (IllegalArgumentException e) {
+            e.printStackTrace();
             ProgramDefaults.displayError(e.getMessage(), ProgramStrings.DIALOGUE_ERROR_TITLE, this);
         }
     }
 
+    private void exportWinners() {
+        String fileName = JOptionPane.showInputDialog(this, "Choose Save File Name (no extension necessary):");
+        if (fileName == null)
+            return;
+        JFileChooser f = ProgramDefaults.getFileChooser("Export \"" + fileName + ".csv\" to Folder:", JFileChooser.SAVE_DIALOG);
+        if (f.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+            SpreadSheet s = RaffleDataStorage.getCombinedWinnersSheet();
+            if (s.writeToFile(fileName, f.getSelectedFile().getAbsolutePath())) {
+                RaffleDataStorage.setWrittenToFile(true);
+                ProgramDefaults.displayMessage("Successfully saved the winners file.", "Success", this);
+            } else {
+                RaffleDataStorage.setWrittenToFile(false);
+                ProgramDefaults.displayError("There has been an error saving the winners file.", "Error", this);
+            }
+            informationPanel.setRunRaffleWinners();
+            revalidate();
+            repaint();
+        }
+    }
 
     public static void initLookAndFeel() {
         //Table things

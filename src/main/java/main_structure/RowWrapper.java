@@ -10,6 +10,9 @@ public class RowWrapper {
     /** The names of each column mapped to the index. */
     private HashMap<String, Integer> indexMap;
 
+    /** The names of the columns of the row. */
+    private String[] columnNames;
+
     /** The row to map indexes to column names. */
     Row row;
 
@@ -22,6 +25,7 @@ public class RowWrapper {
         if (r.getLength() != columnNames.length)
             throw new IllegalArgumentException("Column names length and row length don't match.");
         indexMap = new HashMap<>();
+        this.columnNames = columnNames;
         row = r;
         for (int i = 0; i < r.getLength(); i++) {
             indexMap.put(columnNames[i], i);
@@ -38,6 +42,53 @@ public class RowWrapper {
             return row.get(indexMap.get(columnName));
         else
             return null;
+    }
+
+    /**
+     * Returns the row of this row wrapper.
+     * @return the row of this row wrapper.
+     */
+    public Row getRow() {
+        return row;
+    }
+
+    /**
+     * Creates a shallow copy of this row wrapper with a given index ignored.
+     * @param ignoreIndex the index to ignore. If out of bounds of the lengths of this row wrapper will return null.
+     * @return a shallow copy of this row wrapper with a given index ignored.
+     */
+    public RowWrapper getCopy(int ignoreIndex) {
+        String[] colNames;
+        if (ignoreIndex < 0 || ignoreIndex >= row.getLength())
+            colNames = new String[row.getLength()];
+        else
+            colNames = new String[row.getLength() - 1];
+        Row r = new Row();
+        int thisColIndex = 0;
+        for (int i = 0; i < row.getLength(); i++) {
+            if (i != ignoreIndex) {
+                r.add(r.get(i));
+                colNames[thisColIndex] = colNames[i];
+                thisColIndex++;
+            }
+        }
+        return new RowWrapper(r, colNames);
+    }
+
+
+    public String getItemString(int ignoreIndex) {
+        String s = "";
+        int toConvert = row.getLength() - 1; //Convert n strings
+        for (String colName : indexMap.keySet()) {
+            int index = indexMap.get(colName);
+            if (index != ignoreIndex) {
+                s += colName + ": " + row.get(index).toString();
+                toConvert--;
+                if (toConvert != 0)
+                    s += ", ";
+            }
+        }
+        return s;
     }
 
     public Particle getValue(int index) {
