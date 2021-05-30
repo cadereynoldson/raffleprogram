@@ -193,14 +193,15 @@ public class InteractionRunRaffleCenter extends JPanel {
                 boxDisplay.add(box);
                 comboBoxPanel.add(boxDisplay);
             }
-            JButton back = ProgramDefaults.getButton(ProgramStrings.ITEMS_AD_BACK);
-            back.addActionListener(event -> pcs.firePropertyChange(PropertyChangeKeys.UNDO_RAFFLE, null, null));
+            //TODO: Update so the back button works! Remove it from this release.
+//            JButton back = ProgramDefaults.getButton(ProgramStrings.ITEMS_AD_BACK);
+//            back.addActionListener(event -> pcs.firePropertyChange(PropertyChangeKeys.UNDO_RAFFLE, null, null));
             JButton removeWinner = ProgramDefaults.getButton(ProgramStrings.RAFFLE_WINNERS_REMOVE_WINNER);
             removeWinner.addActionListener(this::handleRemoveWinnerAction);
             JButton exportWinners = ProgramDefaults.getButton(ProgramStrings.RAFFLE_WINNERS_EXPORT_WINNER);
             exportWinners.addActionListener(event -> pcs.firePropertyChange(PropertyChangeKeys.EXPORT_WINNERS, null, null));
             JPanel buttonPanel = ProgramDefaults.getBlankPanel(new GridLayout(1, 0));
-            buttonPanel.add(ProgramDefaults.createSpacedPanel(back));
+//            buttonPanel.add(ProgramDefaults.createSpacedPanel(back));
             buttonPanel.add(ProgramDefaults.createSpacedPanel(removeWinner));
             buttonPanel.add(ProgramDefaults.createSpacedPanel(exportWinners));
             JLabel briefDec = ProgramDefaults.getCenterAlignedInteractionLabel(ProgramStrings.RAFFLE_WINNERS_BRIEF_DESC);

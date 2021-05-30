@@ -36,7 +36,7 @@ public class ProgramStrings {
 
     public static final String HOME_DESCRIPTION_LINK_HEADER = strToHTML("See the links for more information:");
 
-    public static final String HOME_DESCRIPTION_ABOUT_LINK = "https://docs.google.com/document/d/1SkGNVDmBWyi0XSRDR0ehsspmcI42kAjV6DOqVYySZe8/edit?usp=sharing";
+    public static final String HOME_DESCRIPTION_ABOUT_LINK = "https://docs.google.com/document/d/1qBiokLjOfWeH99EwbmGSOXOd2lYmB-2U5-ioIOT09Ww/edit?usp=sharing";
 
     public static final String HOME_DESCRIPTION_ABOUT_TEXT = strToHTML("About");
 

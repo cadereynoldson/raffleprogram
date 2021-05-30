@@ -1,0 +1,9 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="raffle_program:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/raffle_program_jar</output-path>
+    <root id="archive" name="raffle_program.jar">
+      <element id="module-output" name="raffle_program" />
+      <element id="module-output" name="raffle_program1" />
+    </root>
+  </artifact>
+</component>
